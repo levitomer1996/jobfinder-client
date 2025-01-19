@@ -7,14 +7,15 @@ export const AuthContext = createContext();
 const initialState = {
   user: null,
   loading: true,
+  isLogged: false,
 };
 
 const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      return { ...state, user: action.payload, loading: false };
+      return { ...state, user: action.payload, loading: false, isLogged: true };
     case "LOGOUT":
-      return { ...state, user: null, loading: false };
+      return { ...state, user: null, loading: false, isLogged: false };
     case "SET_LOADING":
       return { ...state, loading: action.payload };
     default:
@@ -59,7 +60,13 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user: state.user, loading: state.loading, login, logout }}
+      value={{
+        user: state.user,
+        loading: state.loading,
+        isLogged: state.isLogged,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -67,13 +74,3 @@ const AuthProvider = ({ children }) => {
 };
 
 export default AuthProvider;
-
-// Protected Route Component
-export const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useContext(AuthContext);
-
-  if (loading) return <div>Loading...</div>; // ✅ Display loading while checking auth
-  if (!user) return <Navigate to="/signin" replace />; // ✅ Redirect to signin if not authenticated
-
-  return children; // ✅ Render protected content
-};
