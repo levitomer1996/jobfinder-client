@@ -19,7 +19,7 @@ const Header = () => {
             marginRight: "20px",
           }}
         >
-          Sign In
+          <a href="/signin">Sign In</a>
         </p>
 
         {/* Hamburger Menu */}

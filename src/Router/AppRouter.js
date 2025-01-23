@@ -6,20 +6,21 @@ import Signin from "../Components/Auth/Signin";
 import AuthProvider, { AuthContext } from "../Context/AuthContext";
 import LandingPage from "../ProtectedPages/LandingPage/LandingPage";
 import { ProtectedRoute } from "../Components/Auth/ProtectedRoute";
+import SignupFlowProvider from "../Context/SignupFlowContext";
 
 const AppRouter = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route
-          path="/"
+          path="/signup"
           element={
-            // <ProtectedRoute>
-            <LandingPage />
-            // </ProtectedRoute>
+            <SignupFlowProvider>
+              <Signup />
+            </SignupFlowProvider>
           }
         />
-        <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
       </Routes>
     </Router>
