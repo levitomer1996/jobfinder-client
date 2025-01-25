@@ -56,6 +56,7 @@ const SignupFlowProvider = ({ children }) => {
 
     try {
       setSpinner(true);
+      console.log(creds);
       const response = await jts.post("/users/signup", creds); // Ensure the endpoint is correct
       localStorage.setItem("token", response.data.access_token);
       setSpinner(false);

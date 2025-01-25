@@ -2,9 +2,10 @@ import React, { useContext, useEffect } from "react";
 import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { AuthContext } from "../../Context/AuthContext";
+import UserIcons from "./HeaderComponents/UserIcons";
 
 const Header = () => {
-  const { user, isLogged } = useContext(AuthContext);
+  const { user, isLogged, logout } = useContext(AuthContext);
   useEffect(() => {
     console.log(user);
   }, [user]);
@@ -19,7 +20,7 @@ const Header = () => {
 
         {/* Sign In Text with Special Font */}
         {isLogged ? (
-          <p>{user.name}</p>
+          <UserIcons />
         ) : (
           <p
             style={{

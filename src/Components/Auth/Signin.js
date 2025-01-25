@@ -27,6 +27,7 @@ const SignIn = () => {
     setSuccess(null);
 
     try {
+      console.log(formData);
       const response = await jts.post("/users/signin", formData);
       localStorage.setItem("token", response.data.access_token);
       setSuccess("Signin successful! Redirecting...");

@@ -7,6 +7,7 @@ import AuthProvider, { AuthContext } from "../Context/AuthContext";
 import LandingPage from "../ProtectedPages/LandingPage/LandingPage";
 import { ProtectedRoute } from "../Components/Auth/ProtectedRoute";
 import SignupFlowProvider from "../Context/SignupFlowContext";
+import ProfilePage from "../ProtectedPages/Profile/ProfilePage";
 
 const AppRouter = () => {
   return (
@@ -22,6 +23,7 @@ const AppRouter = () => {
           }
         />
         <Route path="/signin" element={<Signin />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </Router>
   );
