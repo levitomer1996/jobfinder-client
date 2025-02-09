@@ -1,32 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Container,
-  Typography,
   TextField,
   Button,
-  Alert,
-  CircularProgress,
+  Typography,
+  Divider,
   Box,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
-import PhoneIcon from "@mui/icons-material/Phone";
+import BusinessIcon from "@mui/icons-material/Business";
 import jts from "../../../API/jts";
 
-const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
+const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
     phoneNumber: "",
+    companyName: "",
   });
   const [spinner, setSpinner] = useState(false);
   const [success, setSuccess] = useState(null);
-
-  useEffect(() => {
-    setUser(formData);
-  }, [formData]);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,15 +35,20 @@ const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSpinner(true);
-    setSuccess(null);
+    setError(null);
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match!");
+      setSpinner(false);
+      return;
+    }
 
     try {
-      await jts.post("/users/register/jobseeker", formData);
+      await jts.post("/users/register/employer", formData);
       setSuccess("Registration successful!");
-      SumbitFinalForm();
+      SubmitEmployerForm();
     } catch (err) {
-      console.error("Registration Error:", err);
-      alert(err.response?.data?.message || "Registration failed.");
+      setError(err.response?.data?.message || "Registration failed.");
     } finally {
       setSpinner(false);
     }
@@ -69,7 +74,7 @@ const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
         Sign Up
       </Typography>
       <Typography variant="body2" textAlign="center" color="gray" mb={2}>
-        Create your account
+        Create your employer account
       </Typography>
 
       {error && <Alert severity="error">{error}</Alert>}
@@ -121,15 +126,31 @@ const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", mb: 1, gap: 1 }}>
-          <PhoneIcon color="action" />
+          <LockIcon color="action" />
           <TextField
             variant="outlined"
-            placeholder="Phone Number"
-            name="phoneNumber"
+            placeholder="Confirm Password"
+            name="confirmPassword"
+            type="password"
             fullWidth
             size="small"
-            value={formData.phoneNumber}
+            value={formData.confirmPassword}
             onChange={handleChange}
+            required
+          />
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "center", mb: 1, gap: 1 }}>
+          <BusinessIcon color="action" />
+          <TextField
+            variant="outlined"
+            placeholder="Company Name"
+            name="companyName"
+            fullWidth
+            size="small"
+            value={formData.companyName}
+            onChange={handleChange}
+            required
           />
         </Box>
 
@@ -148,6 +169,16 @@ const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
         </Button>
       </form>
 
+      <Divider sx={{ my: 2 }}>OR</Divider>
+
+      <Button
+        variant="outlined"
+        fullWidth
+        sx={{ borderColor: "orange", color: "orange", borderRadius: "24px" }}
+      >
+        Sign In with Google
+      </Button>
+
       <Typography variant="body2" textAlign="center" mt={2}>
         Already have an account?{" "}
         <span style={{ color: "orange", cursor: "pointer" }}>Login</span>
@@ -156,4 +187,4 @@ const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
   );
 };
 
-export default SignupStepTwoFillDetails;
+export default EmployerSignup;

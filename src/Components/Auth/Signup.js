@@ -4,6 +4,7 @@ import SignupStepTwoFillDetails from "./SignupComponents/SignupStepTwoFillDetail
 import jts from "../../API/jts";
 import { SignupFlowContext } from "../../Context/SignupFlowContext";
 import { Navigate } from "react-router-dom";
+import EmployerSignup from "./SignupComponents/EmployerSignup";
 
 const Signup = () => {
   const {
@@ -24,13 +25,25 @@ const Signup = () => {
     case 1:
       return <SignupStepOneChooseType setRole={setSignupFlowRole} />;
     case 2:
-      return (
-        <SignupStepTwoFillDetails
-          setUser={setSignupFlowUser}
-          SumbitFinalForm={SumbitFinalForm}
-          error={state.error}
-        />
-      );
+      if (state.role == "jobseeker") {
+        return (
+          <SignupStepTwoFillDetails
+            setUser={setSignupFlowUser}
+            SumbitFinalForm={SumbitFinalForm}
+            error={state.error}
+          />
+        );
+      }
+      if (state.role == "employer") {
+        return (
+          <EmployerSignup
+            setUser={setSignupFlowUser}
+            SumbitFinalForm={SumbitFinalForm}
+            error={state.error}
+          />
+        );
+      }
+
     case 3:
       return <Navigate to="/" replace />;
   }
