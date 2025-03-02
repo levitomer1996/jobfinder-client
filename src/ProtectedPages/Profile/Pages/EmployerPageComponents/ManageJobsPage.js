@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import {
   Container,
   Typography,
-  Box,
-  Button,
   Paper,
   Grid,
+  Button,
   CircularProgress,
   Alert,
   Dialog,
@@ -15,11 +14,8 @@ import {
   TextField,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import jts from "../../../../API/jts";
-import { useEffect } from "react";
-import useGetUserJobs from "../../../../Hook/useGetUserJobs";
+import JobCard from "./ManageJobsPageComps/JobCard"; // ✅ Import JobCard Component
 
 const ManageJobsPage = ({ jobs, loading, error }) => {
   const [open, setOpen] = useState(false);
@@ -40,12 +36,19 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
       const token = localStorage.getItem("token");
       const response = await jts.post("jobs/create", newJob, {
         headers: {
-          Authorization: `Bearer ${token}`, // ✅ Attach token
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(response.data);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Failed to create job", error);
+    }
     handleClose();
+  };
+
+  const handleDeleteJob = (id) => {
+    console.log(`Deleting job ID: ${id}`);
+    // Implement delete logic here
   };
 
   return (
@@ -61,7 +64,6 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
         paddingBottom: "50px",
       }}
     >
-      {/* Main Paper Container */}
       <Paper
         sx={{
           p: 5,
@@ -79,7 +81,6 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
           🚀 Manage Your Job Listings
         </Typography>
 
-        {/* Add Job Button */}
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -101,64 +102,10 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
         {loading && <CircularProgress />}
         {error && <Alert severity="error">{error}</Alert>}
 
-        {/* Job Cards */}
         <Grid container spacing={3}>
           {jobs.map((job, index) => (
             <Grid item xs={12} md={4} key={index}>
-              <Paper
-                sx={{
-                  p: 3,
-                  borderRadius: 3,
-                  background: "rgba(255, 255, 255, 0.7)",
-                  backdropFilter: "blur(15px)",
-                  boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)",
-                  transition: "all 0.3s",
-                  "&:hover": {
-                    boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.3)",
-                    transform: "scale(1.03)",
-                  },
-                }}
-              >
-                <Box
-                  sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
-                >
-                  <WorkOutlineIcon sx={{ color: "#ff9800", fontSize: 30 }} />
-                  <Typography variant="h6" fontWeight="bold">
-                    {job.title}
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="body1"
-                  color="textSecondary"
-                  sx={{ mb: 1 }}
-                >
-                  📍 {job.location}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  fontWeight="bold"
-                  sx={{ color: "green" }}
-                >
-                  👥 {job.applicants} Applicants
-                </Typography>
-
-                <Button
-                  variant="contained"
-                  startIcon={<DeleteIcon />}
-                  sx={{
-                    mt: 2,
-                    bgcolor: "#d32f2f",
-                    color: "white",
-                    fontWeight: "bold",
-                    borderRadius: 3,
-                    transition: "all 0.3s",
-                    "&:hover": { bgcolor: "#b71c1c", transform: "scale(1.05)" },
-                  }}
-                  fullWidth
-                >
-                  Remove Job
-                </Button>
-              </Paper>
+              <JobCard job={job} onDelete={handleDeleteJob} />
             </Grid>
           ))}
         </Grid>
