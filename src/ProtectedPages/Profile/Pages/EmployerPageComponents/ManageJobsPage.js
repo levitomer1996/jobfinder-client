@@ -17,77 +17,35 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import jts from "../../../../API/jts";
+import { useEffect } from "react";
+import useGetUserJobs from "../../../../Hook/useGetUserJobs";
 
-const ManageJobsPage = () => {
-  const [jobs, setJobs] = useState([
-    {
-      id: 1,
-      title: "Frontend Developer",
-      location: "New York, NY",
-      applicants: 120,
-      status: "open",
-    },
-    {
-      id: 2,
-      title: "Backend Developer",
-      location: "San Francisco, CA",
-      applicants: 85,
-      status: "open",
-    },
-    {
-      id: 3,
-      title: "UI/UX Designer",
-      location: "Remote",
-      applicants: 56,
-      status: "closed",
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const ManageJobsPage = ({ jobs, loading, error }) => {
   const [open, setOpen] = useState(false);
   const [newJob, setNewJob] = useState({
     title: "",
     description: "",
-    salaryRangeMin: "",
-    salaryRangeMax: "",
+    salaryRangeMin: null,
+    salaryRangeMax: null,
     location: "",
     requiredSkills: "",
-    status: "open",
   });
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const handleAddJob = () => {
-    if (!newJob.title || !newJob.description || !newJob.location) return;
-
-    setJobs([
-      ...jobs,
-      {
-        id: jobs.length + 1,
-        ...newJob,
-        requiredSkills: newJob.requiredSkills
-          .split(",")
-          .map((skill) => skill.trim()), // Convert skills to an array
-        applicants: 0,
-      },
-    ]);
-
-    setNewJob({
-      title: "",
-      description: "",
-      salaryRangeMin: "",
-      salaryRangeMax: "",
-      location: "",
-      requiredSkills: "",
-      status: "open",
-    });
-
+  const handleAddJob = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await jts.post("jobs/create", newJob, {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Attach token
+        },
+      });
+      console.log(response.data);
+    } catch (error) {}
     handleClose();
-  };
-
-  const handleDeleteJob = (id) => {
-    setJobs(jobs.filter((job) => job.id !== id));
   };
 
   return (
@@ -95,29 +53,30 @@ const ManageJobsPage = () => {
       maxWidth="lg"
       sx={{
         mt: 4,
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
+        paddingBottom: "50px",
       }}
     >
-      {/* Background with gradient effect */}
+      {/* Main Paper Container */}
       <Paper
         sx={{
           p: 5,
           width: "100%",
           maxWidth: "1200px",
-          background: "linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)",
+          background: "rgba(255, 255, 255, 0.2)",
+          backdropFilter: "blur(10px)",
           borderRadius: 4,
-          boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.1)",
+          boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)",
           textAlign: "center",
+          color: "white",
         }}
       >
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          sx={{ color: "#333", mb: 3 }}
-        >
-          🏢 Manage Your Job Listings
+        <Typography variant="h4" fontWeight="bold" sx={{ mb: 3 }}>
+          🚀 Manage Your Job Listings
         </Typography>
 
         {/* Add Job Button */}
@@ -151,11 +110,11 @@ const ManageJobsPage = () => {
                   p: 3,
                   borderRadius: 3,
                   background: "rgba(255, 255, 255, 0.7)",
-                  backdropFilter: "blur(10px)",
-                  boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.1)",
+                  backdropFilter: "blur(15px)",
+                  boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.2)",
                   transition: "all 0.3s",
                   "&:hover": {
-                    boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.2)",
+                    boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.3)",
                     transform: "scale(1.03)",
                   },
                 }}
@@ -196,7 +155,6 @@ const ManageJobsPage = () => {
                     "&:hover": { bgcolor: "#b71c1c", transform: "scale(1.05)" },
                   }}
                   fullWidth
-                  onClick={() => handleDeleteJob(job.id)}
                 >
                   Remove Job
                 </Button>
@@ -259,8 +217,6 @@ const ManageJobsPage = () => {
               setNewJob({ ...newJob, salaryRangeMax: e.target.value })
             }
           />
-
-          {/* Skills Input */}
           <TextField
             label="Required Skills (Comma Separated)"
             fullWidth

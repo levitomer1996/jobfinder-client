@@ -13,12 +13,14 @@ import {
 import useGetEmployerProfile from "../../../Hook/useGetEmployerProfile";
 import { EmployerPageContext } from "../../../Context/EmployerPageContext";
 import ManageJobsPage from "./EmployerPageComponents/ManageJobsPage";
+import useGetUserJobs from "../../../Hook/useGetUserJobs";
 
 const EmployerProfilePage = () => {
-  const { employerProfile, loading, error, fetchGetEmployerProfile } =
-    useGetEmployerProfile();
   const { activePage, setActivePage } = useContext(EmployerPageContext);
 
+  const { employerProfile, loading, error, fetchGetEmployerProfile } =
+    useGetEmployerProfile();
+  const { jobs, get_user_jobs_loading, get_user_jobs_error } = useGetUserJobs();
   useEffect(() => {
     fetchGetEmployerProfile();
   }, []);
@@ -28,7 +30,13 @@ const EmployerProfilePage = () => {
       case "EmployerProfile":
         return null;
       case "ManageJobs":
-        return <ManageJobsPage />;
+        return (
+          <ManageJobsPage
+            jobs={jobs}
+            loading={get_user_jobs_loading}
+            error={get_user_jobs_error}
+          />
+        );
       default:
         return <Typography>Page Not Found</Typography>;
     }
