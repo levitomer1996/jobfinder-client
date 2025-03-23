@@ -21,6 +21,7 @@ const EmployerProfilePage = () => {
   const { employerProfile, loading, error, fetchGetEmployerProfile } =
     useGetEmployerProfile();
   const { jobs, get_user_jobs_loading, get_user_jobs_error } = useGetUserJobs();
+
   useEffect(() => {
     fetchGetEmployerProfile();
   }, []);

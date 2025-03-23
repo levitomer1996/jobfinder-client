@@ -12,10 +12,12 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Autocomplete,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import jts from "../../../../API/jts";
 import JobCard from "./ManageJobsPageComps/JobCard"; // ✅ Import JobCard Component
+import useSkillRegexSearch from "../../../../Hook/useSkillRegexSearch";
 
 const ManageJobsPage = ({ jobs, loading, error }) => {
   const [open, setOpen] = useState(false);
@@ -50,6 +52,8 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
     console.log(`Deleting job ID: ${id}`);
     // Implement delete logic here
   };
+
+  const { skillsResults, searchSkills } = useSkillRegexSearch();
 
   return (
     <Container
@@ -164,14 +168,27 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
               setNewJob({ ...newJob, salaryRangeMax: e.target.value })
             }
           />
-          <TextField
-            label="Required Skills (Comma Separated)"
-            fullWidth
-            margin="normal"
-            value={newJob.requiredSkills}
-            onChange={(e) =>
-              setNewJob({ ...newJob, requiredSkills: e.target.value })
-            }
+          <Autocomplete
+            freeSolo
+            options={skillsResults.map((skill) => skill.name)} // Extract only `name`
+            getOptionLabel={(option) => option} // Ensure proper label rendering
+            onInputChange={(event, newValue) => {
+              setNewJob({ ...newJob, requiredSkills: newValue });
+              searchSkills(newValue);
+            }}
+            onChange={(event, newValue) => {
+              if (newValue) {
+                setNewJob({ ...newJob, requiredSkills: newValue });
+              }
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Required Skills (Comma Separated)"
+                fullWidth
+                margin="normal"
+              />
+            )}
           />
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2 }}>

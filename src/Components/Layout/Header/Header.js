@@ -8,7 +8,7 @@ import {
   Box,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { AuthContext } from "../../Context/AuthContext";
+import { AuthContext } from "../../../Context/AuthContext";
 import UserIcons from "./HeaderComponents/UserIcons";
 
 const Header = () => {

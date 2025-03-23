@@ -1,7 +1,6 @@
 import { useState } from "react";
-import jts from "../API/jts"; // your custom Axios instance
 
-const usePdfUpload = (endpoint = "/upload/pdf") => {
+const usePdfUpload = (url = "http://localhost:3000/upload/pdf") => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -15,16 +14,21 @@ const usePdfUpload = (endpoint = "/upload/pdf") => {
     setUploadedFile(null);
 
     try {
-      const response = await jts.post(endpoint, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      console.log("trying to pload");
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
       });
 
-      setUploadedFile(response.data);
-      return response.data;
+      if (!response.ok) {
+        throw new Error("Failed to upload PDF");
+      }
+
+      const data = await response.json();
+      setUploadedFile(data);
+      return data;
     } catch (error) {
-      setUploadError(error?.response?.data?.message || error.message);
+      setUploadError(error.message);
       console.error("Upload error:", error);
     } finally {
       setUploading(false);

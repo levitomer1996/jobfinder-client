@@ -26,7 +26,18 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
   });
   const [spinner, setSpinner] = useState(false);
   const [success, setSuccess] = useState(null);
-  const [error, setError] = useState(null);
+  const [errorText, setErrorText] = useState(null);
+  const [error, setError] = useState(false);
+
+  const renderSuccess = (s, e) => {
+    if (e) {
+      return <Alert severity="error">{errorText}</Alert>;
+    } else if (s) {
+      return <Alert severity="success">{s}</Alert>;
+    } else {
+      return null;
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,7 +46,7 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSpinner(true);
-    setError(null);
+    setError(false);
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match!");
@@ -48,7 +59,8 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
       setSuccess("Registration successful!");
       SubmitEmployerForm();
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed.");
+      setError(true);
+      setErrorText(err.response?.data?.message || "Registration failed.");
     } finally {
       setSpinner(false);
     }
@@ -76,10 +88,7 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
       <Typography variant="body2" textAlign="center" color="gray" mb={2}>
         Create your employer account
       </Typography>
-
-      {error && <Alert severity="error">{error}</Alert>}
-      {success && <Alert severity="success">{success}</Alert>}
-
+      {renderSuccess(success, error)}
       <form onSubmit={handleSubmit}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 1, gap: 1 }}>
           <PersonIcon color="action" />

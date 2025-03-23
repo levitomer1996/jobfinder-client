@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Container,
   Grid,
@@ -9,8 +9,13 @@ import {
   Paper,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { AuthContext } from "../../../Context/AuthContext";
+import { ModalContext } from "../../../Context/ModalContext";
 
 const JobSearchBar = () => {
+  const { user, loading } = useContext(AuthContext);
+  const { openModal } = useContext(ModalContext);
+
   return (
     <Container
       maxWidth="md"
@@ -105,12 +110,30 @@ const JobSearchBar = () => {
       </Paper>
 
       {/* Resume Upload Link */}
-      <Typography variant="body2" sx={{ mt: 2, color: "#555" }}>
-        <Link href="#" underline="hover" fontWeight="bold" color="primary">
-          Upload or create a resume
-        </Link>{" "}
-        to easily apply to jobs.
-      </Typography>
+      {user && user.role === "jobseeker" && (
+        <Typography variant="body2" sx={{ mt: 2, color: "#555" }}>
+          <Button
+            onClick={() => {
+              openModal("RESUME_UPLOAD");
+            }}
+            variant="text"
+            sx={{
+              p: 0,
+              minWidth: "auto",
+              fontWeight: "bold",
+              color: "primary.main",
+              textTransform: "none",
+              "&:hover": {
+                textDecoration: "underline",
+                backgroundColor: "transparent",
+              },
+            }}
+          >
+            Upload or create a resume
+          </Button>{" "}
+          to easily apply to jobs.
+        </Typography>
+      )}
     </Container>
   );
 };
