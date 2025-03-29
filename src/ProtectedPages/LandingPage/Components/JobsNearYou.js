@@ -14,15 +14,17 @@ import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
 import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import jts from "../../../API/jts";
 import { ModalContext } from "../../../Context/ModalContext";
+import { AuthContext } from "../../../Context/AuthContext";
 
 const JobsNearYou = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const query = "Tel aviv";
+        const query = "Hod Ha Sharon";
         const response = await jts.get("/jobs/bylocation", {
           params: { q: query },
         });
@@ -56,6 +58,7 @@ const JobsNearYou = () => {
             date={job.date}
             category={job.category}
             location={job.location}
+            user={user}
           />
         ))}
       </Grid>
@@ -70,6 +73,7 @@ const JobNearYouCard = ({
   date,
   category,
   location,
+  user,
 }) => {
   const { openModal } = useContext(ModalContext);
 
@@ -155,7 +159,14 @@ const JobNearYouCard = ({
               },
             }}
             onClick={() => {
-              openModal("RESUME_UPLOAD");
+              if (user.jobSeekerProfile) {
+                if (user.jobSeekerProfile.resume < 1) {
+                  openModal("RESUME_UPLOAD");
+                } else if (user.jobSeekerProfile.resume >= 1) {
+                  openModal("APPLY_TO_JOB");
+                }
+              }
+              openModal("NOT_ALLOWED_AS_EMPLOYER");
             }}
           >
             Apply Now

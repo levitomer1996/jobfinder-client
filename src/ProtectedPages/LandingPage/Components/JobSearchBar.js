@@ -112,7 +112,8 @@ const JobSearchBar = () => {
       {/* Resume Upload Link */}
       {user &&
         user.role === "jobseeker" &&
-        user.jobSeekerProfile.resume.length < 1 && (
+        user.jobSeekerProfile.resume.length < 1 &&
+        !user.jobSeekerProfile == null && (
           <Typography variant="body2" sx={{ mt: 2, color: "#555" }}>
             <Button
               onClick={() => {

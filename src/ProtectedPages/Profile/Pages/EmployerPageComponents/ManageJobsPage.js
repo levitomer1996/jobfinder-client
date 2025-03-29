@@ -55,6 +55,14 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
 
   const { skillsResults, searchSkills } = useSkillRegexSearch();
 
+  const formatError = (err) => {
+    if (!err) return null;
+    if (typeof err === "string") return err;
+    return (
+      err?.response?.data?.message || err?.message || "Something went wrong."
+    );
+  };
+
   return (
     <Container
       maxWidth="lg"
@@ -104,7 +112,7 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
         </Button>
 
         {loading && <CircularProgress />}
-        {error && <Alert severity="error">{error}</Alert>}
+        {error && <Alert severity="error">{formatError(error)}</Alert>}
 
         <Grid container spacing={3}>
           {jobs.map((job, index) => (
@@ -170,8 +178,8 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
           />
           <Autocomplete
             freeSolo
-            options={skillsResults.map((skill) => skill.name)} // Extract only `name`
-            getOptionLabel={(option) => option} // Ensure proper label rendering
+            options={skillsResults.map((skill) => skill.name)}
+            getOptionLabel={(option) => option}
             onInputChange={(event, newValue) => {
               setNewJob({ ...newJob, requiredSkills: newValue });
               searchSkills(newValue);
