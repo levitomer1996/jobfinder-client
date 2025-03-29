@@ -110,30 +110,32 @@ const JobSearchBar = () => {
       </Paper>
 
       {/* Resume Upload Link */}
-      {user && user.role === "jobseeker" && (
-        <Typography variant="body2" sx={{ mt: 2, color: "#555" }}>
-          <Button
-            onClick={() => {
-              openModal("RESUME_UPLOAD");
-            }}
-            variant="text"
-            sx={{
-              p: 0,
-              minWidth: "auto",
-              fontWeight: "bold",
-              color: "primary.main",
-              textTransform: "none",
-              "&:hover": {
-                textDecoration: "underline",
-                backgroundColor: "transparent",
-              },
-            }}
-          >
-            Upload or create a resume
-          </Button>{" "}
-          to easily apply to jobs.
-        </Typography>
-      )}
+      {user &&
+        user.role === "jobseeker" &&
+        user.jobSeekerProfile.resume.length < 1 && (
+          <Typography variant="body2" sx={{ mt: 2, color: "#555" }}>
+            <Button
+              onClick={() => {
+                openModal("RESUME_UPLOAD");
+              }}
+              variant="text"
+              sx={{
+                p: 0,
+                minWidth: "auto",
+                fontWeight: "bold",
+                color: "primary.main",
+                textTransform: "none",
+                "&:hover": {
+                  textDecoration: "underline",
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
+              Upload or create a resume
+            </Button>{" "}
+            to easily apply to jobs.
+          </Typography>
+        )}
     </Container>
   );
 };

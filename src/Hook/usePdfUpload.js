@@ -1,11 +1,17 @@
 import { useState } from "react";
+import jts from "../API/jts";
 
-const usePdfUpload = (url = "http://localhost:3000/upload/pdf") => {
+const usePdfUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const uploadPdf = async (selectedPdfFile) => {
+    if (!selectedPdfFile || selectedPdfFile.type !== "application/pdf") {
+      setUploadError("Please select a valid PDF file.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", selectedPdfFile);
 
@@ -14,21 +20,19 @@ const usePdfUpload = (url = "http://localhost:3000/upload/pdf") => {
     setUploadedFile(null);
 
     try {
-      console.log("trying to pload");
-      const response = await fetch(url, {
-        method: "POST",
-        body: formData,
+      const response = await jts.post("upload/pdf/resume", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to upload PDF");
-      }
-
-      const data = await response.json();
-      setUploadedFile(data);
-      return data;
+      setUploadedFile(response.data);
+      return response.data;
     } catch (error) {
-      setUploadError(error.message);
+      const errorMsg =
+        error.response?.data?.message || error.message || "Upload failed";
+      setUploadError(errorMsg);
       console.error("Upload error:", error);
     } finally {
       setUploading(false);
