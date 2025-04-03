@@ -37,6 +37,7 @@ const JobsNearYou = () => {
     };
     fetchJobs();
   }, []);
+  useEffect(() => {}, [jobs]);
 
   return (
     <Container maxWidth="md" sx={{ mt: 5 }}>
@@ -52,7 +53,8 @@ const JobsNearYou = () => {
       <Grid container spacing={3}>
         {jobs.map((job) => (
           <JobNearYouCard
-            key={job.id}
+            key={job._id}
+            jobId={job._id}
             title={job.title}
             description={job.description}
             date={job.date}
@@ -67,7 +69,7 @@ const JobsNearYou = () => {
 };
 
 const JobNearYouCard = ({
-  id,
+  jobId,
   title,
   description,
   date,
@@ -75,10 +77,10 @@ const JobNearYouCard = ({
   location,
   user,
 }) => {
-  const { openModal } = useContext(ModalContext);
+  const { openModal, state } = useContext(ModalContext);
 
   return (
-    <Grid item xs={12} key={id}>
+    <Grid item xs={12} key={jobId}>
       <Card
         sx={{
           p: 2,
@@ -159,14 +161,14 @@ const JobNearYouCard = ({
               },
             }}
             onClick={() => {
-              if (user.jobSeekerProfile) {
-                if (user.jobSeekerProfile.resume < 1) {
-                  openModal("RESUME_UPLOAD");
-                } else if (user.jobSeekerProfile.resume >= 1) {
-                  openModal("APPLY_TO_JOB");
-                }
+              if (user.jobSeekerProfile.resume.length > 0) {
+                openModal("APPLY_TO_JOB", {
+                  jobId,
+                  jobSeekerId: user.jobSeekerProfile._id,
+                });
+              } else if (user.jobSeekerProfile.resume.length == 0) {
+                openModal("RESUME_UPLOAD");
               }
-              openModal("NOT_ALLOWED_AS_EMPLOYER");
             }}
           >
             Apply Now

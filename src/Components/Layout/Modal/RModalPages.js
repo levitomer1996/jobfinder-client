@@ -3,8 +3,8 @@ import ModalResumeUploadPage from "./ModalPages/ModalResumeUploadPage";
 import ModalApplyToJob from "./ModalPages/ModalApplyToJob";
 import ModalNotAllowedAsEmployer from "./ModalPages/ModalNotAllowedAsEmployer";
 
-function RModalPages({ content }) {
-  switch (content) {
+function RModalPages({ page }) {
+  switch (page) {
     case "RESUME_UPLOAD":
       return <ModalResumeUploadPage />;
     case "APPLY_TO_JOB":

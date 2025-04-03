@@ -4,20 +4,23 @@ export const ModalContext = createContext();
 
 const initialState = {
   isOpened: false,
+  page: null,
   content: null,
 };
 
 const modalReducer = (state, action) => {
+  console.log(state);
   switch (action.type) {
     case "OPEN":
       return {
         isOpened: true,
-        content: action.payload,
+        page: action.payload.page,
+        content: action.payload.content,
       };
     case "CLOSE":
       return {
         isOpened: false,
-        content: null,
+        page: null,
       };
     default:
       return state;
@@ -27,8 +30,9 @@ const modalReducer = (state, action) => {
 const ModalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(modalReducer, initialState);
 
-  const openModal = (content) => {
-    dispatch({ type: "OPEN", payload: content });
+  const openModal = (page, content) => {
+    console.log({ page, content });
+    dispatch({ type: "OPEN", payload: { page, content } });
   };
 
   const closeModal = () => {
