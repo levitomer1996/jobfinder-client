@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Paper, Box, Typography, Button, Chip } from "@mui/material";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { ModalContext } from "../../../../../Context/ModalContext";
 
 const JobCard = ({ job }) => {
+  const { openModal } = useContext(ModalContext);
+  useEffect(() => {
+    console.log(job);
+  }, []);
   return (
     <Paper
       sx={{
@@ -27,7 +32,9 @@ const JobCard = ({ job }) => {
       {/* Description */}
       <Typography variant="body2" color="textSecondary" sx={{ mb: 2, px: 2 }}>
         📍 <strong>{job.location}</strong> -{" "}
-        <span style={{ fontWeight: 500 }}>{job.applicants} Applicants</span>
+        <span style={{ fontWeight: 500 }}>
+          Applicants:{job.applicants.length}
+        </span>
       </Typography>
 
       {/* Salary */}
@@ -62,6 +69,9 @@ const JobCard = ({ job }) => {
           "&:hover": {
             bgcolor: "#564ed6",
           },
+        }}
+        onClick={() => {
+          openModal("EMPLOYER_POSTED_JOB", { job });
         }}
       >
         Explore

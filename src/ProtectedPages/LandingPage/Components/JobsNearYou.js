@@ -7,7 +7,6 @@ import {
   CardContent,
   Button,
   Box,
-  Chip,
 } from "@mui/material";
 import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
 import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
@@ -28,6 +27,7 @@ const JobsNearYou = () => {
         const response = await jts.get("/jobs/bylocation", {
           params: { q: query },
         });
+        console.log(response.data);
         setJobs(response.data);
       } catch (error) {
         console.error("Error fetching jobs", error);
@@ -37,17 +37,19 @@ const JobsNearYou = () => {
     };
     fetchJobs();
   }, []);
-  useEffect(() => {}, [jobs]);
 
   return (
-    <Container maxWidth="md" sx={{ mt: 5 }}>
+    <Container
+      maxWidth="md"
+      sx={{ mt: 5, fontFamily: "'Poppins', sans-serif" }}
+    >
       <Typography
         variant="h4"
         fontWeight="bold"
         gutterBottom
-        sx={{ textAlign: "center", mb: 4 }}
+        sx={{ textAlign: "center", mb: 4, fontFamily: "'Poppins', sans-serif" }}
       >
-        🚀 Jobs Near You
+        Jobs Near You
       </Typography>
 
       <Grid container spacing={3}>
@@ -77,10 +79,10 @@ const JobNearYouCard = ({
   location,
   user,
 }) => {
-  const { openModal, state } = useContext(ModalContext);
+  const { openModal } = useContext(ModalContext);
 
   return (
-    <Grid item xs={12} key={jobId}>
+    <Grid item xs={12} sm={6} md={12} key={jobId}>
       <Card
         sx={{
           p: 2,
@@ -89,13 +91,13 @@ const JobNearYouCard = ({
           boxShadow: "0 6px 16px rgba(0,0,0,0.05)",
           transition: "all 0.3s ease",
           position: "relative",
+          fontFamily: "'Poppins', sans-serif",
           "&:hover": {
             boxShadow: "0 8px 22px rgba(0,0,0,0.12)",
             transform: "translateY(-3px)",
           },
         }}
       >
-        {/* Push Pin Icon */}
         <PushPinRoundedIcon
           sx={{
             position: "absolute",
@@ -105,8 +107,7 @@ const JobNearYouCard = ({
           }}
         />
 
-        <CardContent>
-          {/* Date */}
+        <CardContent sx={{ fontFamily: "'Poppins', sans-serif" }}>
           <Typography variant="caption" color="text.secondary">
             {new Date(date || Date.now()).toLocaleDateString("en-US", {
               month: "short",
@@ -115,12 +116,10 @@ const JobNearYouCard = ({
             })}
           </Typography>
 
-          {/* Job Title */}
           <Typography variant="h6" fontWeight="600" sx={{ mt: 1, mb: 1.5 }}>
             {title}
           </Typography>
 
-          {/* Job info */}
           <Box display="flex" alignItems="center" gap={2} mb={1}>
             <Box display="flex" alignItems="center" gap={0.5}>
               <WorkOutlineRoundedIcon fontSize="small" color="primary" />
@@ -137,25 +136,24 @@ const JobNearYouCard = ({
             </Box>
           </Box>
 
-          {/* Description (short) */}
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {description?.slice(0, 100) ||
               "Exciting opportunity in a growing company..."}
             ...
           </Typography>
 
-          {/* Apply Button */}
           <Button
             variant="contained"
             size="small"
             sx={{
               textTransform: "none",
               borderRadius: 2,
-              backgroundColor: "#ff9800", // Orange
+              backgroundColor: "#ff9800",
               fontWeight: 500,
               px: 3,
               py: 0.8,
               mt: 1,
+              fontFamily: "'Poppins', sans-serif",
               "&:hover": {
                 backgroundColor: "#fb8c00",
               },
@@ -166,7 +164,7 @@ const JobNearYouCard = ({
                   jobId,
                   jobSeekerId: user.jobSeekerProfile._id,
                 });
-              } else if (user.jobSeekerProfile.resume.length == 0) {
+              } else {
                 openModal("RESUME_UPLOAD");
               }
             }}

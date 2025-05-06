@@ -3,16 +3,20 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Typography,
   Button,
   Box,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { AuthContext } from "../../../Context/AuthContext";
 import UserIcons from "./HeaderComponents/UserIcons";
+import logo from "../../../Asstets/LOGO/HeaderLogo.png";
 
 const Header = () => {
   const { user, isLogged } = useContext(AuthContext);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     console.log(user);
@@ -21,64 +25,92 @@ const Header = () => {
   return (
     <AppBar
       position="static"
+      elevation={2}
       sx={{
-        background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
-        color: "white",
-        boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)",
+        backgroundColor: "#ffffff",
+        color: "#333333",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.05)",
       }}
     >
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        {/* Left Side - JobTracker Logo */}
-        <Typography
-          variant="h6"
-          fontWeight="bold"
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: { xs: 1, sm: 2 },
+        }}
+      >
+        {/* Logo (hidden on mobile) */}
+        <Box
           sx={{
-            fontFamily: "'Poppins', sans-serif",
-            fontSize: "22px",
-            letterSpacing: "1px",
+            display: { xs: "none", sm: "flex" },
+            alignItems: "center",
+            height: 56,
+            pl: 1,
           }}
         >
-          JobTracker
-        </Typography>
+          <Box
+            component="img"
+            src={logo}
+            alt="JobTracker Logo"
+            sx={{
+              height: "200px",
+              width: "200px",
+              objectFit: "contain",
+              display: "block",
+              maxHeight: 56,
+            }}
+          />
+        </Box>
 
-        {/* Right Side - Icons & Menu */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          {/* User Icons OR Sign In Button */}
-          {isLogged ? (
-            <UserIcons />
-          ) : (
-            <Button
-              href="/signin"
-              sx={{
-                fontFamily: "'Roboto', sans-serif",
-                fontWeight: "bold",
-                color: "white",
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                borderRadius: "8px",
-                px: 3,
-                py: 1,
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.3)",
-                  transform: "scale(1.05)",
-                },
-              }}
-            >
-              Sign In
-            </Button>
-          )}
+        {/* Desktop only: Icons / Sign In */}
+        {!isMobile && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: { xs: 1, sm: 2 },
+            }}
+          >
+            {isLogged ? (
+              <UserIcons />
+            ) : (
+              <Button
+                href="/signin"
+                sx={{
+                  fontFamily: "'Roboto', sans-serif",
+                  fontWeight: "bold",
+                  color: "#333",
+                  backgroundColor: "rgba(0, 0, 0, 0.05)",
+                  borderRadius: "8px",
+                  px: 2,
+                  py: 0.7,
+                  textTransform: "none",
+                  fontSize: "0.875rem",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                    transform: "scale(1.05)",
+                  },
+                }}
+              >
+                Sign In
+              </Button>
+            )}
+          </Box>
+        )}
 
-          {/* Hamburger Menu */}
+        {/* Mobile only: Menu icon */}
+        {isMobile && (
           <IconButton
             edge="end"
             sx={{
-              color: "white",
-              "&:hover": { color: "#ffcc00" },
+              color: "#333",
+              "&:hover": { color: "#ff9800" },
             }}
           >
             <MenuIcon />
           </IconButton>
-        </Box>
+        )}
       </Toolbar>
     </AppBar>
   );

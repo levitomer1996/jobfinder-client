@@ -29,7 +29,7 @@ const GlobalModal = () => {
         >
           <CloseIcon />
         </IconButton>
-        <RModalPages page={state.page} />
+        <RModalPages page={state.page} content={state.content} />
       </Box>
     </Modal>
   );
