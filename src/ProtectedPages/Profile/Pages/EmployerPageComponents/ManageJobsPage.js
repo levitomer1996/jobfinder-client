@@ -13,10 +13,12 @@ import {
   DialogTitle,
   TextField,
   Autocomplete,
+  IconButton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import jts from "../../../../API/jts";
-import JobCard from "./ManageJobsPageComps/JobCard"; // ✅ Import JobCard Component
+import JobCard from "./ManageJobsPageComps/JobCard";
 import useSkillRegexSearch from "../../../../Hook/useSkillRegexSearch";
 
 const ManageJobsPage = ({ jobs, loading, error }) => {
@@ -27,7 +29,7 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
     salaryRangeMin: null,
     salaryRangeMax: null,
     location: "",
-    requiredSkills: "",
+    requiredSkills: [""],
   });
 
   const handleOpen = () => setOpen(true);
@@ -36,6 +38,7 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
   const handleAddJob = async () => {
     try {
       const token = localStorage.getItem("token");
+      console.log(newJob);
       const response = await jts.post("jobs/create", newJob, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -61,6 +64,21 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
     return (
       err?.response?.data?.message || err?.message || "Something went wrong."
     );
+  };
+
+  const handleSkillChange = (index, value) => {
+    const updatedSkills = [...newJob.requiredSkills];
+    updatedSkills[index] = value;
+    setNewJob({ ...newJob, requiredSkills: updatedSkills });
+  };
+
+  const handleAddSkillField = () => {
+    setNewJob({ ...newJob, requiredSkills: [...newJob.requiredSkills, ""] });
+  };
+
+  const handleRemoveSkillField = (index) => {
+    const updatedSkills = newJob.requiredSkills.filter((_, i) => i !== index);
+    setNewJob({ ...newJob, requiredSkills: updatedSkills });
   };
 
   return (
@@ -176,28 +194,45 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
               setNewJob({ ...newJob, salaryRangeMax: e.target.value })
             }
           />
-          <Autocomplete
-            freeSolo
-            options={skillsResults.map((skill) => skill.name)}
-            getOptionLabel={(option) => option}
-            onInputChange={(event, newValue) => {
-              setNewJob({ ...newJob, requiredSkills: newValue });
-              searchSkills(newValue);
-            }}
-            onChange={(event, newValue) => {
-              if (newValue) {
-                setNewJob({ ...newJob, requiredSkills: newValue });
-              }
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Required Skills (Comma Separated)"
-                fullWidth
-                margin="normal"
-              />
-            )}
-          />
+
+          {newJob.requiredSkills.map((skill, index) => (
+            <Grid container spacing={1} alignItems="center" key={index}>
+              <Grid item xs={11}>
+                <Autocomplete
+                  freeSolo
+                  options={skillsResults.map((s) => s.name)}
+                  value={skill}
+                  onInputChange={(event, newValue) => {
+                    handleSkillChange(index, newValue);
+                    searchSkills(newValue);
+                  }}
+                  onChange={(event, newValue) => {
+                    handleSkillChange(index, newValue || "");
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={`Required Skill ${index + 1}`}
+                      fullWidth
+                      margin="normal"
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={1}>
+                <IconButton
+                  onClick={() => handleRemoveSkillField(index)}
+                  color="error"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          ))}
+
+          <Button onClick={handleAddSkillField} sx={{ mt: 1 }}>
+            + Add Another Skill
+          </Button>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
           <Button onClick={handleClose} sx={{ color: "gray" }}>
