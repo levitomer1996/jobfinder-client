@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Container,
   Grid,
@@ -12,10 +12,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import { AuthContext } from "../../../Context/AuthContext";
 import { ModalContext } from "../../../Context/ModalContext";
 
-const JobSearchBar = () => {
-  const { user, loading } = useContext(AuthContext);
+const JobSearchBar = ({ setLocationSearch, setTitleSearch, handleSearch }) => {
+  const { user } = useContext(AuthContext);
   const { openModal } = useContext(ModalContext);
-
   return (
     <Container
       maxWidth="md"
@@ -65,6 +64,7 @@ const JobSearchBar = () => {
                   boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
                 },
               }}
+              onChange={(e) => setTitleSearch(e.target.value)}
             />
           </Grid>
 
@@ -81,6 +81,7 @@ const JobSearchBar = () => {
                   boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
                 },
               }}
+              onChange={(e) => setLocationSearch(e.target.value)}
             />
           </Grid>
 
@@ -101,6 +102,9 @@ const JobSearchBar = () => {
                   backgroundColor: "#e68900",
                   transform: "scale(1.05)",
                 },
+              }}
+              onClick={() => {
+                handleSearch();
               }}
             >
               Search Jobs

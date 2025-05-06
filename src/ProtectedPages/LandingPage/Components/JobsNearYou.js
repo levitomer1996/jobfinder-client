@@ -15,28 +15,9 @@ import jts from "../../../API/jts";
 import { ModalContext } from "../../../Context/ModalContext";
 import { AuthContext } from "../../../Context/AuthContext";
 
-const JobsNearYou = () => {
-  const [jobs, setJobs] = useState([]);
+const JobsNearYou = ({ jobs }) => {
   const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const query = "Hod Ha Sharon";
-        const response = await jts.get("/jobs/bylocation", {
-          params: { q: query },
-        });
-        console.log(response.data);
-        setJobs(response.data);
-      } catch (error) {
-        console.error("Error fetching jobs", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchJobs();
-  }, []);
 
   return (
     <Container
