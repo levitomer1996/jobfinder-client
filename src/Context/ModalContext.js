@@ -9,7 +9,6 @@ const initialState = {
 };
 
 const modalReducer = (state, action) => {
-  console.log(state);
   switch (action.type) {
     case "OPEN":
       return {

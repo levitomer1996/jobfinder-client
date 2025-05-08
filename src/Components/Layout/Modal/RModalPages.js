@@ -3,6 +3,7 @@ import ModalResumeUploadPage from "./ModalPages/ModalResumeUploadPage";
 import ModalApplyToJob from "./ModalPages/ModalApplyToJob";
 import ModalNotAllowedAsEmployer from "./ModalPages/ModalNotAllowedAsEmployer";
 import ModalEmployerPostedJob from "./ModalPages/ModalEmployerPostedJob";
+import JobseekerViewJobModal from "./ModalPages/JobseekerViewJobModal";
 
 function RModalPages({ page, content }) {
   switch (page) {
@@ -14,6 +15,8 @@ function RModalPages({ page, content }) {
       return <ModalNotAllowedAsEmployer />;
     case "EMPLOYER_POSTED_JOB":
       return <ModalEmployerPostedJob content={content} />;
+    case "JOBSEEKER_VIEW_JOB":
+      return <JobseekerViewJobModal content={content} />;
     default:
       return <div>null</div>;
   }

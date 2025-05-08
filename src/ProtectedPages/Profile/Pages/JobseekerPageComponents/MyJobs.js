@@ -15,9 +15,11 @@ import {
 import WorkIcon from "@mui/icons-material/Work";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { AuthContext } from "../../../../Context/AuthContext";
+import { ModalContext } from "../../../../Context/ModalContext";
 
 const MyJobs = () => {
   const { user } = useContext(AuthContext);
+  const { openModal } = useContext(ModalContext);
   const appliedJobs = user?.appliedJobs || [];
 
   return (
@@ -103,6 +105,9 @@ const MyJobs = () => {
                       textTransform: "none",
                       fontWeight: "bold",
                       color: "#fff",
+                    }}
+                    onClick={() => {
+                      openModal("JOBSEEKER_VIEW_JOB", job);
                     }}
                   >
                     View Details

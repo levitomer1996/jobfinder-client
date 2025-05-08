@@ -56,9 +56,9 @@ const ProfilePage = () => {
     switch (user.role) {
       case "jobseeker":
         return (
-          <EmployerPageProvider>
+        <EmployerPageProvider>
             <JobSeekerProfilePage />;
-          </EmployerPageProvider>
+            </EmployerPageProvider>
         );
       case "employer":
         return (
