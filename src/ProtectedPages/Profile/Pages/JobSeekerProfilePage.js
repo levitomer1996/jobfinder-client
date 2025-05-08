@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -14,180 +14,91 @@ import {
   CircularProgress,
   Alert,
   TextField,
+  useMediaQuery,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import useGetJobSeeker from "../../../Hook/useGetJobSeeker";
+import { EmployerPageContext } from "../../../Context/EmployerPageContext";
+import JSProfilePage from "./JobseekerPageComponents/JobseekerProfilePage";
+import MyJobs from "./JobseekerPageComponents/MyJobs";
+import { useTheme } from "@mui/material/styles";
 
 const JobSeekerProfilePage = () => {
   const { jobSeeker, loading, error, fetchJobSeeker } = useGetJobSeeker();
+  const { activePage, setActivePage } = useContext(EmployerPageContext);
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // sm = 600px
 
   useEffect(() => {
     fetchJobSeeker();
   }, []);
 
+  function renderPage(p) {
+    switch (p) {
+      case "MY_PROFILE":
+        return (
+          <JSProfilePage
+            jobSeeker={jobSeeker}
+            loading={loading}
+            error={error}
+          />
+        );
+      case "MY_JOBS":
+        return <MyJobs />;
+      default:
+        return null;
+    }
+  }
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, display: "flex" }}>
-      {/* Sidebar Navigation */}
-      <Paper sx={{ width: "250px", mr: 4, p: 2 }}>
-        <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-          My Profile
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <List>
-          <ListItem button>
-            <AccountCircleIcon />
-            <ListItemText primary="Profile" sx={{ ml: 1 }} />
-          </ListItem>
-          <ListItem button>
-            <WorkOutlineIcon />
-            <ListItemText primary="My Jobs" sx={{ ml: 1 }} />
-          </ListItem>
-          <ListItem button>
-            <RateReviewIcon />
-            <ListItemText primary="My Reviews" sx={{ ml: 1 }} />
-          </ListItem>
-        </List>
-      </Paper>
-
-      {/* Profile Content */}
-      <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-        {/* Show Loading or Error */}
-        {loading && <CircularProgress />}
-        {error && <Alert severity="error">{error}</Alert>}
-
-        {/* Profile Info */}
-        {jobSeeker && (
-          <>
-            <Grid item xs={12}>
-              <Paper sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-                  <Avatar
-                    src="https://via.placeholder.com/150"
-                    sx={{ width: 100, height: 100 }}
-                  />
-                  <Box>
-                    <Typography variant="h5" fontWeight="bold">
-                      {jobSeeker.user.name}
-                    </Typography>
-                    <Typography variant="subtitle1" color="textSecondary">
-                      {jobSeeker.user.jobTitle || "No job title set"}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
-            </Grid>
-
-            {/* Contact Info */}
-            <Grid item xs={12}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  Contact Information
-                </Typography>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  value={jobSeeker.user.email}
-                  sx={{ mt: 2 }}
-                  InputProps={{ readOnly: true }}
-                />
-                <TextField
-                  fullWidth
-                  label="Phone Number"
-                  value={jobSeeker.user.phone || "No phone number set"}
-                  sx={{ mt: 2 }}
-                  InputProps={{ readOnly: true }}
-                />
-              </Paper>
-            </Grid>
-
-            {/* Skills Section */}
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  Skills
-                </Typography>
-                <Box sx={{ mt: 2 }}>
-                  {jobSeeker.skills.length > 0 ? (
-                    jobSeeker.skills.map((skill, index) => (
-                      <Typography key={index}>• {skill}</Typography>
-                    ))
-                  ) : (
-                    <Typography color="textSecondary">
-                      No skills added yet
-                    </Typography>
-                  )}
-                </Box>
-              </Paper>
-            </Grid>
-
-            {/* Experience Section */}
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  Experience
-                </Typography>
-                <Box sx={{ mt: 2 }}>
-                  {jobSeeker.experience.length > 0 ? (
-                    jobSeeker.experience.map((exp, index) => (
-                      <Box key={index} sx={{ mb: 2 }}>
-                        <Typography fontWeight="bold">{exp.company}</Typography>
-                        <Typography variant="body2">{exp.position}</Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {exp.years}
-                        </Typography>
-                      </Box>
-                    ))
-                  ) : (
-                    <Typography color="textSecondary">
-                      No experience added yet
-                    </Typography>
-                  )}
-                </Box>
-              </Paper>
-            </Grid>
-
-            {/* Resume Upload */}
-            <Grid item xs={12}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  Resume Upload
-                </Typography>
-                <TextField
-                  type="file"
-                  fullWidth
-                  inputProps={{ accept: ".pdf,.docx" }}
-                  sx={{ mt: 2 }}
-                />
-                {jobSeeker.resume ? (
-                  <Typography sx={{ mt: 1 }} color="green">
-                    Uploaded: {jobSeeker.resume}
-                  </Typography>
-                ) : (
-                  <Typography color="textSecondary">
-                    No resume uploaded yet
-                  </Typography>
-                )}
-              </Paper>
-            </Grid>
-
-            {/* Edit Profile Button */}
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                sx={{
-                  width: "100%",
-                  padding: "10px",
-                  fontSize: "16px",
-                  backgroundColor: "#1976d2",
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Grid
+        container
+        spacing={3}
+        direction={isSmallScreen ? "column" : "row"}
+        alignItems={isSmallScreen ? "stretch" : "flex-start"}
+      >
+        {/* Sidebar */}
+        <Grid item xs={12} sm={4} md={3}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
+              My Profile
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <List>
+              <ListItem
+                button
+                onClick={() => {
+                  setActivePage("MY_PROFILE");
                 }}
               >
-                Edit Profile
-              </Button>
-            </Grid>
-          </>
-        )}
+                <AccountCircleIcon />
+                <ListItemText primary="Profile" sx={{ ml: 1 }} />
+              </ListItem>
+              <ListItem
+                button
+                onClick={() => {
+                  setActivePage("MY_JOBS");
+                }}
+              >
+                <WorkOutlineIcon />
+                <ListItemText primary="My Jobs" sx={{ ml: 1 }} />
+              </ListItem>
+              <ListItem button>
+                <RateReviewIcon />
+                <ListItemText primary="My Reviews" sx={{ ml: 1 }} />
+              </ListItem>
+            </List>
+          </Paper>
+        </Grid>
+
+        {/* Main Content */}
+        <Grid item xs={12} sm={8} md={9}>
+          {renderPage(activePage)}
+        </Grid>
       </Grid>
     </Container>
   );

@@ -26,6 +26,7 @@ import useGetJobSeeker from "../../Hook/useGetJobSeeker";
 import EmployerProfilePage from "./Pages/EmployerProfilePage";
 import JobSeekerProfilePage from "./Pages/JobSeekerProfilePage";
 import EmployerPageProvider from "../../Context/EmployerPageContext";
+import { JobSeekerPageContext } from "../../Context/JobseekerPageContext";
 
 const StyledPaper = styled(Paper)({
   padding: "24px",
@@ -54,7 +55,11 @@ const ProfilePage = () => {
   if (user) {
     switch (user.role) {
       case "jobseeker":
-        return <JobSeekerProfilePage />;
+        return (
+          <EmployerPageProvider>
+            <JobSeekerProfilePage />;
+          </EmployerPageProvider>
+        );
       case "employer":
         return (
           <EmployerPageProvider>
