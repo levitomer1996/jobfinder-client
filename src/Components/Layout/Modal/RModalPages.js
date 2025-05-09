@@ -4,6 +4,7 @@ import ModalApplyToJob from "./ModalPages/ModalApplyToJob";
 import ModalNotAllowedAsEmployer from "./ModalPages/ModalNotAllowedAsEmployer";
 import ModalEmployerPostedJob from "./ModalPages/ModalEmployerPostedJob";
 import JobseekerViewJobModal from "./ModalPages/JobseekerViewJobModal";
+import SendMessageToModal from "./ModalPages/SendMessageToModal";
 
 function RModalPages({ page, content }) {
   switch (page) {
@@ -17,6 +18,8 @@ function RModalPages({ page, content }) {
       return <ModalEmployerPostedJob content={content} />;
     case "JOBSEEKER_VIEW_JOB":
       return <JobseekerViewJobModal content={content} />;
+    case "SEND_MESSAGE_TO":
+      return <SendMessageToModal content={content} />;
     default:
       return <div>null</div>;
   }

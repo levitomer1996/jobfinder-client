@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import {
   Avatar,
   Box,
@@ -42,23 +42,15 @@ const Sidebar = styled(Paper)({
 });
 
 const ProfilePage = () => {
-  const { user } = useContext(AuthContext);
-  const { jobSeeker, loading, error, fetchJobSeeker } = useGetJobSeeker();
+  const { user, loading_auth } = useContext(AuthContext);
 
-  useEffect(() => {
-    fetchJobSeeker();
-  }, []);
-
-  const handleResumeUpload = (event) => {
-    // Implement resume upload logic
-  };
   if (user) {
     switch (user.role) {
       case "jobseeker":
         return (
-        <EmployerPageProvider>
-            <JobSeekerProfilePage />;
-            </EmployerPageProvider>
+          <EmployerPageProvider>
+            <JobSeekerProfilePage />
+          </EmployerPageProvider>
         );
       case "employer":
         return (
@@ -66,11 +58,20 @@ const ProfilePage = () => {
             <EmployerProfilePage />
           </EmployerPageProvider>
         );
-      case null:
-        return <div>Please Login</div>;
+      default:
+        return <div>Please login</div>;
     }
   } else {
-    return <div>Please login</div>;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress style={{ color: "orange" }} />
+      </Box>
+    );
   }
 };
 

@@ -1,25 +1,31 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ModalContext } from "../../../../Context/ModalContext";
 import jts from "../../../../API/jts";
 import {
-  CardContent,
   Typography,
+  Divider,
   Box,
   Chip,
-  Divider,
+  Stack,
+  CircularProgress,
+  Avatar,
   Grid,
   Button,
-  Avatar,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ChatIcon from "@mui/icons-material/Chat";
+import { ModalContext } from "../../../../Context/ModalContext";
 
 const JobseekerViewJobModal = ({ content }) => {
   const [cardDetails, setCardDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { closeModal } = useContext(ModalContext);
+  const { openModal } = useContext(ModalContext);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const fetchEmployerUser = async () => {
-      setLoading(true);
       try {
         const res = await jts.post(
           "/users/getuserbyemployerid",
@@ -37,145 +43,118 @@ const JobseekerViewJobModal = ({ content }) => {
         setLoading(false);
       }
     };
+
     fetchEmployerUser();
   }, [content.postedBy]);
 
-  if (loading) {
+  if (loading || !cardDetails) {
     return (
-      <Box sx={{ p: 4, textAlign: "center" }}>
-        <Typography>Loading job details...</Typography>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height={200}
+      >
+        <CircularProgress color="warning" />
       </Box>
     );
   }
 
-  if (!cardDetails) {
-    return (
-      <Box sx={{ p: 4, textAlign: "center" }}>
-        <Typography color="error">Failed to load job details</Typography>
-      </Box>
-    );
-  }
+  const { name, email, _id, content: job } = cardDetails;
 
-  const {
-    firstName,
-    lastName,
-    email,
-    companyName,
-    companyDescription,
-    content: {
-      jobTitle,
-      description,
-      location,
-      salary,
-      jobType,
-      requirements,
-      responsibilities,
-      applicationDeadline,
-    },
-  } = cardDetails;
-
-  // Format date
-  const formattedDeadline = applicationDeadline
-    ? new Date(applicationDeadline).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    : "No deadline specified";
+  const handleMessage = () => {
+    openModal("SEND_MESSAGE_TO", { name, email, _id });
+  };
 
   return (
-    <Box sx={{ maxHeight: "80vh", overflow: "auto", p: 2 }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          {jobTitle}
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          {companyName} - {location}
-        </Typography>
-        <Box sx={{ display: "flex", gap: 1, my: 1 }}>
-          <Chip label={jobType} color="primary" size="small" />
-          <Chip label={`$${salary}`} color="success" size="small" />
-        </Box>
-      </Box>
-
-      <Divider sx={{ my: 2 }} />
-
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Job Description
-        </Typography>
-        <Typography variant="body1">{description}</Typography>
-      </Box>
-
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Requirements
+    <Box
+      sx={{
+        p: { xs: 2, sm: 3 },
+        maxWidth: "100%",
+        maxHeight: "80vh",
+        overflowY: "auto",
+        backgroundColor: "#fffdf7",
+        borderRadius: 3,
+      }}
+    >
+      {/* Header: Employer Info + Message Button */}
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justifyContent="space-between"
+        flexDirection={isMobile ? "column" : "row"}
+        mb={3}
+      >
+        <Grid
+          item
+          display="flex"
+          alignItems="center"
+          width={isMobile ? "100%" : "auto"}
+        >
+          <Avatar sx={{ bgcolor: "#ff9800", mr: 2 }}>
+            <AccountCircleIcon />
+          </Avatar>
+          <Box>
+            <Typography variant="h6" color="black">
+              {name}
             </Typography>
-            {requirements?.split("\n").map((req, index) => (
-              <Typography
-                key={index}
-                variant="body2"
-                component="div"
-                sx={{ display: "flex", mb: 1 }}
-              >
-                • {req}
-              </Typography>
-            ))}
+            <Typography variant="body2" color="black">
+              {email}
+            </Typography>
           </Box>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Responsibilities
-            </Typography>
-            {responsibilities?.split("\n").map((resp, index) => (
-              <Typography
-                key={index}
-                variant="body2"
-                component="div"
-                sx={{ display: "flex", mb: 1 }}
-              >
-                • {resp}
-              </Typography>
-            ))}
-          </Box>
+        <Grid item mt={isMobile ? 2 : 0}>
+          <Button
+            fullWidth={isMobile}
+            variant="contained"
+            sx={{
+              backgroundColor: "#ff9800",
+              "&:hover": { backgroundColor: "#fb8c00" },
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: 500,
+            }}
+            startIcon={<ChatIcon />}
+            onClick={handleMessage}
+          >
+            Message
+          </Button>
         </Grid>
       </Grid>
 
-      <Divider sx={{ my: 2 }} />
+      <Divider sx={{ mb: 3, borderColor: "#ffe0b2" }} />
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          About {companyName}
-        </Typography>
-        <Typography variant="body1">{companyDescription}</Typography>
-      </Box>
+      {/* Job Info */}
+      <Typography variant="h5" fontWeight={700} color="black" gutterBottom>
+        {job.title}
+      </Typography>
+      <Typography variant="body1" color="black" paragraph>
+        {job.description}
+      </Typography>
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Contact Information
-        </Typography>
-        <Typography variant="body1">
-          {firstName} {lastName}
-        </Typography>
-        <Typography variant="body1">{email}</Typography>
-      </Box>
+      <Typography variant="subtitle1" color="black" gutterBottom>
+        <strong>Location:</strong> {job.location}
+      </Typography>
 
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="body2" color="text.secondary">
-          Application Deadline: {formattedDeadline}
+      {/* Skills */}
+      <Box mt={3}>
+        <Typography variant="subtitle1" color="black" gutterBottom>
+          <strong>Required Skills:</strong>
         </Typography>
-      </Box>
-
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-        <Button variant="outlined" onClick={closeModal}>
-          Close
-        </Button>
-        <Button variant="contained" color="primary">
-          Apply Now
-        </Button>
+        <Stack direction="row" spacing={1} flexWrap="wrap">
+          {job.requiredSkills.map((skill) => (
+            <Chip
+              key={skill._id}
+              label={skill.name}
+              sx={{
+                bgcolor: "#ffe0b2",
+                color: "#e65100",
+                fontWeight: 600,
+              }}
+            />
+          ))}
+        </Stack>
       </Box>
     </Box>
   );

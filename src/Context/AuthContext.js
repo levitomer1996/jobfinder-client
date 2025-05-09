@@ -6,7 +6,7 @@ export const AuthContext = createContext();
 
 const initialState = {
   user: null,
-  loading: true,
+  loading_auth: false,
   isLogged: false,
 };
 
@@ -62,7 +62,7 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user: state.user,
-        loading: state.loading,
+        loading_auth: state.loading_auth,
         isLogged: state.isLogged,
         login,
         logout,

@@ -8,6 +8,7 @@ import LandingPage from "../ProtectedPages/LandingPage/LandingPage";
 import { ProtectedRoute } from "../Components/Auth/ProtectedRoute";
 import SignupFlowProvider from "../Context/SignupFlowContext";
 import ProfilePage from "../ProtectedPages/Profile/ProfilePage";
+import ChatPage from "../ProtectedPages/ChatPage/ChatPage";
 
 const AppRouter = () => {
   return (
@@ -24,6 +25,7 @@ const AppRouter = () => {
         />
         <Route path="/signin" element={<Signin />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/chat" element={<ChatPage />} />
       </Routes>
     </Router>
   );
