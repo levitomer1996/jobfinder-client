@@ -15,10 +15,13 @@ import {
 } from "@mui/material";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { AuthContext } from "../../../../Context/AuthContext";
 import useSkillRegexSearch from "../../../../Hook/useSkillRegexSearch";
 import useGetSkillsByJobSeekerId from "../../../../Hook/useGetSkillsByJobSeekerId";
 import jts from "../../../../API/jts";
+import { ModalContext } from "../../../../Context/ModalContext";
+import { FaceRetouchingOffSharp } from "@mui/icons-material";
 
 const JSProfilePage = ({ jobSeeker, error, loading }) => {
   const [editingSkills, setEditingSkills] = useState(false);
@@ -31,8 +34,11 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
   const [experienceErrors, setExperienceErrors] = useState([
     { company: false, position: false, years: false },
   ]);
+  const [resumeFiles, setResumeFiles] = useState([]);
 
   const { user } = useContext(AuthContext);
+  const { openModal } = useContext(ModalContext);
+
   const { searchSkills, skillsResults } = useSkillRegexSearch();
   const { jobSeekerSkills, fetchSkills } = useGetSkillsByJobSeekerId();
 
@@ -53,6 +59,7 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
         exp.map(() => ({ company: false, position: false, years: false }))
       );
 
+      setResumeFiles(user.resumes);
       fetchSkills(jobSeeker._id);
     }
   }, [jobSeeker]);
@@ -79,7 +86,6 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
     const newErrors = skillsInput.map((s) => s.trim() === "");
     setSkillsErrors(newErrors);
     if (newErrors.includes(true)) return;
-    console.log("Submitting skills:", skillsInput);
     setEditingSkills(false);
     try {
       const res = await jts.post(
@@ -91,8 +97,7 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
           },
         }
       );
-      console.log(res.data);
-      fetchSkills(jobSeeker._id); // refresh displayed skill names
+      fetchSkills(jobSeeker._id);
     } catch (error) {
       console.error("Failed to submit skills", error);
     }
@@ -107,9 +112,29 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
     setExperienceErrors(newErrors);
     const hasErrors = newErrors.some((e) => e.company || e.position || e.years);
     if (hasErrors) return;
-    console.log("Submitting experience:", experienceInput);
     setEditingExperience(false);
     // TODO: send to backend
+  };
+
+  const handleDeleteResume = async (resumeId) => {
+    try {
+      const res = await jts.post(
+        "upload/pdf/deleteresume",
+        {
+          resumeId,
+          jobseekerId: user.jobSeekerProfile._id,
+          userId: user._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setResumeFiles(res.data);
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
   };
 
   return (
@@ -370,16 +395,44 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
                 <Typography variant="h6" fontWeight="bold" color="black">
                   Resume
                 </Typography>
-                <IconButton size="small">
-                  <EditIcon fontSize="small" />
-                </IconButton>
               </Box>
               <Divider sx={{ mb: 2 }} />
-              {jobSeeker.resume && jobSeeker.resume.length > 0 ? (
-                jobSeeker.resume.map((file, index) => (
-                  <Typography key={index} color="green">
-                    • {file}
-                  </Typography>
+              <Box sx={{ mb: 2 }}>
+                <Button
+                  variant="outlined"
+                  component="label"
+                  onClick={() => {
+                    openModal("RESUME_UPLOAD");
+                  }}
+                >
+                  Upload Resume
+                </Button>
+              </Box>
+              {resumeFiles.length > 0 ? (
+                resumeFiles.map((file, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 1,
+                    }}
+                  >
+                    <Typography color="green">
+                      •{" "}
+                      {file.filename.replace(/(_[a-zA-Z0-9]+)?\.pdf$/, ".pdf")}
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => {
+                        handleDeleteResume(file._id);
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
                 ))
               ) : (
                 <Typography color="textSecondary">
