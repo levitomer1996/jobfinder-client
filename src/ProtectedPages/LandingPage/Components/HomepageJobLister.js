@@ -15,7 +15,7 @@ import jts from "../../../API/jts";
 import { ModalContext } from "../../../Context/ModalContext";
 import { AuthContext } from "../../../Context/AuthContext";
 
-const JobsNearYou = ({ jobs }) => {
+const HomepageJobLister = ({ jobs, title }) => {
   const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
 
@@ -30,12 +30,12 @@ const JobsNearYou = ({ jobs }) => {
         gutterBottom
         sx={{ textAlign: "center", mb: 4, fontFamily: "'Poppins', sans-serif" }}
       >
-        Jobs Near You
+        {title}
       </Typography>
 
       <Grid container spacing={3}>
         {jobs.map((job) => (
-          <JobNearYouCard
+          <JobCard
             key={job._id}
             jobId={job._id}
             title={job.title}
@@ -51,7 +51,7 @@ const JobsNearYou = ({ jobs }) => {
   );
 };
 
-const JobNearYouCard = ({
+const JobCard = ({
   jobId,
   title,
   description,
@@ -158,4 +158,4 @@ const JobNearYouCard = ({
   );
 };
 
-export default JobsNearYou;
+export default HomepageJobLister;

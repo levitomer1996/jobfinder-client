@@ -1,14 +1,12 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Paper, Box, Typography, Button, Chip } from "@mui/material";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { ModalContext } from "../../../../../Context/ModalContext";
 
 const JobCard = ({ job }) => {
   const { openModal } = useContext(ModalContext);
-  useEffect(() => {
-    console.log(job);
-  }, []);
+
   return (
     <Paper
       sx={{
@@ -29,13 +27,35 @@ const JobCard = ({ job }) => {
         {job.title}
       </Typography>
 
-      {/* Description */}
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 2, px: 2 }}>
-        📍 <strong>{job.location}</strong> -{" "}
-        <span style={{ fontWeight: 500 }}>
-          Applicants:{job.applicants.length}
-        </span>
-      </Typography>
+      {/* Location + Show Applicants */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 1,
+          mb: 2,
+        }}
+      >
+        <Typography variant="body2" color="textSecondary">
+          📍 <strong>{job.location}</strong>
+        </Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => openModal("SHOW_APPLICANTS", { jobId: job._id })}
+          sx={{
+            textTransform: "none",
+            fontWeight: 500,
+            borderRadius: 2,
+            px: 2,
+            py: 0.5,
+          }}
+        >
+          Show Applicants ({job.applicants.length})
+        </Button>
+      </Box>
 
       {/* Salary */}
       {job.salaryRangeMin && job.salaryRangeMax && (

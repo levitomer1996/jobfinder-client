@@ -72,26 +72,20 @@ const ChatPage = () => {
   // Set up socket listener for new messages
   useEffect(() => {
     const handleNewMessage = (msg) => {
-      console.log("🟢 New message received via socket:", msg);
+      console.log("🟢 New message received via socket:", msg.content);
 
       // Update the specific chat in our chat list
+      setMessages((prev) => [...prev, msg]);
+
+      // Update the chat list state
       setChatList((prevChatList) => {
-        const newChatList = prevChatList.map((chatItem) => {
-          if (chatItem.chat._id === msg.chatId) {
-            // Deep clone the existing messages and add the new one
-            const updatedMessages = [...(chatItem.chat.messages || []), msg];
-
-            // If this is the active chat, also update our messages state
-            if (chatItem.chat._id === chatId) {
-              console.log("Updating active chat messages with:", msg);
-              setMessages((prev) => [...prev, msg]);
-            }
-
+        return prevChatList.map((chatItem) => {
+          if (chatItem.chat._id === chatId) {
             return {
               ...chatItem,
               chat: {
                 ...chatItem.chat,
-                messages: updatedMessages,
+                messages: [...(chatItem.chat.messages || []), msg],
                 lastMessage: msg,
                 updatedAt: new Date().toISOString(),
               },
@@ -99,7 +93,6 @@ const ChatPage = () => {
           }
           return chatItem;
         });
-        return newChatList;
       });
     };
 
@@ -132,27 +125,6 @@ const ChatPage = () => {
         createdAt: new Date().toISOString(),
         chatId,
       };
-
-      // Optimistic update of local message list (this is what the user sees)
-      setMessages((prev) => [...prev, newMessage]);
-
-      // Update the chat list state
-      setChatList((prevChatList) => {
-        return prevChatList.map((chatItem) => {
-          if (chatItem.chat._id === chatId) {
-            return {
-              ...chatItem,
-              chat: {
-                ...chatItem.chat,
-                messages: [...(chatItem.chat.messages || []), newMessage],
-                lastMessage: newMessage,
-                updatedAt: new Date().toISOString(),
-              },
-            };
-          }
-          return chatItem;
-        });
-      });
 
       // Send through socket
       socket.emit("sendMessage", newMessage);
