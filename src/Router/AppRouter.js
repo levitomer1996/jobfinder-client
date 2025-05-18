@@ -9,6 +9,8 @@ import { ProtectedRoute } from "../Components/Auth/ProtectedRoute";
 import SignupFlowProvider from "../Context/SignupFlowContext";
 import ProfilePage from "../ProtectedPages/Profile/ProfilePage";
 import ChatPage from "../ProtectedPages/ChatPage/ChatPage";
+import OAuth2Callback from "../Components/Auth/Google/OAuth2Callback";
+import ChooseGoogleRole from "../Components/Auth/Google/ChooseGoogleRole";
 
 const AppRouter = () => {
   return (
@@ -26,6 +28,8 @@ const AppRouter = () => {
         <Route path="/signin" element={<Signin />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/chat" element={<ChatPage />} />
+        <Route path="/oauth2callback" element={<OAuth2Callback />} />
+        <Route path="/choose-role" element={<ChooseGoogleRole />} />
       </Routes>
     </Router>
   );

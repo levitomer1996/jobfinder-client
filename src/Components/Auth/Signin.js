@@ -7,15 +7,21 @@ import {
   Divider,
   Alert,
   Link,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import AppleIcon from "@mui/icons-material/Apple";
-import jts from "../../API/jts"; // Import API service
+import jts from "../../API/jts";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [googleRole, setGoogleRole] = useState("jobseeker");
+  const [companyName, setCompanyName] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,7 +33,6 @@ const SignIn = () => {
     setSuccess(null);
 
     try {
-      console.log(formData);
       const response = await jts.post("/users/signin", formData);
       localStorage.setItem("token", response.data.access_token);
       setSuccess("Signin successful! Redirecting...");
@@ -37,6 +42,14 @@ const SignIn = () => {
     } catch (err) {
       setError(err.response?.data?.message || "Signin failed. Try again.");
     }
+  };
+
+  const handleGoogleLogin = () => {
+    const params = new URLSearchParams({
+      role: googleRole,
+      ...(googleRole === "employer" && companyName ? { companyName } : {}),
+    });
+    window.location.href = `http://localhost:4000/users/google?${params.toString()}`;
   };
 
   return (
@@ -64,11 +77,39 @@ const SignIn = () => {
         policies.
       </Typography>
 
+      {/* Choose Role */}
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <InputLabel>Login as</InputLabel>
+        <Select
+          value={googleRole}
+          label="Login as"
+          onChange={(e) => setGoogleRole(e.target.value)}
+        >
+          <MenuItem value="jobseeker">Job Seeker</MenuItem>
+          <MenuItem value="employer">Employer</MenuItem>
+        </Select>
+      </FormControl>
+
+      {/* Company Name (Only for Employer) */}
+      {googleRole === "employer" && (
+        <TextField
+          label="Company Name"
+          variant="outlined"
+          fullWidth
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
+          sx={{ mb: 2 }}
+        />
+      )}
+
       {/* Sign in with Google */}
       <Button
         variant="outlined"
         fullWidth
         startIcon={<GoogleIcon />}
+        onClick={() => {
+          window.location.href = "/choose-role";
+        }}
         sx={{
           mb: 2,
           py: 1,
@@ -78,22 +119,6 @@ const SignIn = () => {
         }}
       >
         Continue with Google
-      </Button>
-
-      {/* Sign in with Apple */}
-      <Button
-        variant="outlined"
-        fullWidth
-        startIcon={<AppleIcon />}
-        sx={{
-          mb: 2,
-          py: 1,
-          borderRadius: 2,
-          textTransform: "none",
-          fontWeight: "bold",
-        }}
-      >
-        Continue with Apple
       </Button>
 
       <Divider sx={{ my: 2 }}>or</Divider>
