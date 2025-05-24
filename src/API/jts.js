@@ -1,7 +1,7 @@
 import axios from "axios";
-var localhost = "http://localhost:4000";
+export const dbserver = "http://localhost:4000";
 
-export const baseUrl = localhost;
+export const baseUrl = dbserver;
 export default axios.create({
   baseURL: baseUrl,
 });

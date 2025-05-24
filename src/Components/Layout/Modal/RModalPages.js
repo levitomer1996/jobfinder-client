@@ -6,6 +6,7 @@ import ModalEmployerPostedJob from "./ModalPages/ModalEmployerPostedJob";
 import JobseekerViewJobModal from "./ModalPages/JobseekerViewJobModal";
 import SendMessageToModal from "./ModalPages/SendMessageToModal";
 import ShowApplicantsModal from "./ModalPages/ShowApplicantsModal";
+import ModalUploadProfileImage from "./ModalPages/ModalUploadProfileImage";
 
 function RModalPages({ page, content }) {
   switch (page) {
@@ -23,6 +24,8 @@ function RModalPages({ page, content }) {
       return <SendMessageToModal content={content} />;
     case "SHOW_APPLICANTS":
       return <ShowApplicantsModal content={content} />;
+    case "UPLOAD_PROFILE_IMAGE":
+      return <ModalUploadProfileImage />;
     default:
       return <div>null</div>;
   }

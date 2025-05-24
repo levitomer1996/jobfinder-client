@@ -19,9 +19,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { AuthContext } from "../../../../Context/AuthContext";
 import useSkillRegexSearch from "../../../../Hook/useSkillRegexSearch";
 import useGetSkillsByJobSeekerId from "../../../../Hook/useGetSkillsByJobSeekerId";
-import jts from "../../../../API/jts";
+import jts, { dbserver } from "../../../../API/jts";
 import { ModalContext } from "../../../../Context/ModalContext";
 import { FaceRetouchingOffSharp } from "@mui/icons-material";
+import useGetProfileImage from "../../../../Hook/useGetProfileImage ";
 
 const JSProfilePage = ({ jobSeeker, error, loading }) => {
   const [editingSkills, setEditingSkills] = useState(false);
@@ -41,6 +42,7 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
 
   const { searchSkills, skillsResults } = useSkillRegexSearch();
   const { jobSeekerSkills, fetchSkills } = useGetSkillsByJobSeekerId();
+  const { profileImageUrl } = useGetProfileImage(user._id);
 
   useEffect(() => {
     if (jobSeeker) {
@@ -153,6 +155,10 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
               <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
                 <Avatar
                   sx={{ width: 100, height: 100, backgroundColor: "#ff9800" }}
+                  onClick={() => {
+                    openModal("UPLOAD_PROFILE_IMAGE");
+                  }}
+                  src={`${dbserver}${user.profileImageUrl}`}
                 >
                   <InsertDriveFileIcon fontSize="large" />
                 </Avatar>
