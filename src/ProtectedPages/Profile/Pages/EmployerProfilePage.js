@@ -14,6 +14,7 @@ import useGetEmployerProfile from "../../../Hook/useGetEmployerProfile";
 import { EmployerPageContext } from "../../../Context/EmployerPageContext";
 import ManageJobsPage from "./EmployerPageComponents/ManageJobsPage";
 import useGetUserJobs from "../../../Hook/useGetUserJobs";
+import EmpProfilePage from "./EmployerPageComponents/EmpProfilePage";
 
 const EmployerProfilePage = () => {
   const { activePage, setActivePage } = useContext(EmployerPageContext);
@@ -29,7 +30,7 @@ const EmployerProfilePage = () => {
   function renderPage(p) {
     switch (p) {
       case "EmployerProfile":
-        return null;
+        return <EmpProfilePage />;
       case "ManageJobs":
         return (
           <ManageJobsPage

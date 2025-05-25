@@ -19,7 +19,7 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { AuthContext } from "../../../../Context/AuthContext";
 
-const UserIcons = () => {
+const UserIcons = ({ profileImageUrl, unreadedChats }) => {
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [chatAnchorEl, setChatAnchorEl] = useState(null);
 
@@ -95,7 +95,7 @@ const UserIcons = () => {
         sx={{ color: "orange" }}
       >
         <Badge
-          badgeContent={chats.length}
+          badgeContent={unreadedChats ? unreadedChats.length : null}
           sx={{
             "& .MuiBadge-badge": {
               backgroundColor: "black",
@@ -184,12 +184,12 @@ const UserIcons = () => {
       </Menu>
 
       {/* Profile icon */}
-      <IconButton
-        color="inherit"
-        onClick={handleProfileMenuOpen}
-        sx={{ color: "orange" }}
-      >
-        <AccountCircleIcon />
+      <IconButton color="inherit" onClick={handleProfileMenuOpen} sx={{ p: 0 }}>
+        <Avatar
+          alt="User Avatar"
+          src={profileImageUrl}
+          sx={{ width: 32, height: 32 }}
+        />
       </IconButton>
 
       <Menu

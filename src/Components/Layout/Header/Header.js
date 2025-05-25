@@ -12,6 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { AuthContext } from "../../../Context/AuthContext";
 import UserIcons from "./HeaderComponents/UserIcons";
 import logo from "../../../Asstets/LOGO/HeaderLogo.png";
+import { dbserver } from "../../../API/jts";
 
 const Header = () => {
   const { user, isLogged } = useContext(AuthContext);
@@ -40,77 +41,80 @@ const Header = () => {
           px: { xs: 1, sm: 2 },
         }}
       >
-        {/* Logo (hidden on mobile) */}
+        {/* Left side: Logo (hidden on mobile) */}
         <Box
           sx={{
             display: { xs: "none", sm: "flex" },
             alignItems: "center",
-            height: 56,
+            height: 64,
             pl: 1,
           }}
+          onClick={() => (window.location.href = "/")}
         >
           <Box
             component="img"
             src={logo}
             alt="JobTracker Logo"
             sx={{
-              height: "200px",
-              width: "200px",
+              height: 150,
+              width: "auto",
               objectFit: "contain",
               display: "block",
-              maxHeight: 56,
             }}
           />
         </Box>
 
-        {/* Desktop only: Icons / Sign In */}
-        {!isMobile && (
+        {/* Center (on mobile): Logo */}
+        {isMobile && (
           <Box
+            component="img"
+            src={logo}
+            alt="JobTracker Logo"
             sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: { xs: 1, sm: 2 },
+              height: 48,
+              width: "auto",
+              objectFit: "contain",
+              display: { xs: "block", sm: "none" },
             }}
-          >
-            {isLogged ? (
-              <UserIcons />
-            ) : (
-              <Button
-                href="/signin"
-                sx={{
-                  fontFamily: "'Roboto', sans-serif",
-                  fontWeight: "bold",
-                  color: "#333",
-                  backgroundColor: "rgba(0, 0, 0, 0.05)",
-                  borderRadius: "8px",
-                  px: 2,
-                  py: 0.7,
-                  textTransform: "none",
-                  fontSize: "0.875rem",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.1)",
-                    transform: "scale(1.05)",
-                  },
-                }}
-              >
-                Sign In
-              </Button>
-            )}
-          </Box>
+          />
         )}
 
-        {/* Mobile only: Menu icon */}
-        {isMobile && (
-          <IconButton
-            edge="end"
-            sx={{
-              color: "#333",
-              "&:hover": { color: "#ff9800" },
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-        )}
+        {/* Right side: User icons or sign-in */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
+          {isLogged ? (
+            <UserIcons
+              profileImageUrl={`${dbserver}${user.profileImageUrl}`}
+              unreadedChats={user.unreadedChats}
+            />
+          ) : (
+            <Button
+              href="/signin"
+              sx={{
+                fontFamily: "'Roboto', sans-serif",
+                fontWeight: "bold",
+                color: "#333",
+                backgroundColor: "rgba(0, 0, 0, 0.05)",
+                borderRadius: "8px",
+                px: 2,
+                py: 0.7,
+                textTransform: "none",
+                fontSize: "0.875rem",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  transform: "scale(1.05)",
+                },
+              }}
+            >
+              Sign In
+            </Button>
+          )}
+        </Box>
       </Toolbar>
     </AppBar>
   );
