@@ -7,18 +7,23 @@ import ModalProvider from "./Context/ModalContext";
 import Header from "./Components/Layout/Header/Header";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
-// ✅
+import { LoadScript } from "@react-google-maps/api"; // ✅
 
 function App() {
   return (
     <GoogleOAuthProvider clientId="205200934678-32ib30tg98d2rncfd13avh8rqgkbriol.apps.googleusercontent.com">
-      <AuthProvider>
-        <ModalProvider>
-          <Header />
-          <AppRouter />
-          <GlobalModal />
-        </ModalProvider>
-      </AuthProvider>
+      <LoadScript
+        googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+        libraries={["places"]}
+      >
+        <AuthProvider>
+          <ModalProvider>
+            <Header />
+            <AppRouter />
+            <GlobalModal />
+          </ModalProvider>
+        </AuthProvider>
+      </LoadScript>
     </GoogleOAuthProvider>
   );
 }

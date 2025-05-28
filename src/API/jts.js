@@ -1,7 +1,6 @@
 import axios from "axios";
-export const dbserver = "http://10.100.102.122:4000";
 
-export const baseUrl = dbserver;
+export const baseUrl = process.env.REACT_APP_SERVER_URL;
 export default axios.create({
   baseURL: baseUrl,
 });

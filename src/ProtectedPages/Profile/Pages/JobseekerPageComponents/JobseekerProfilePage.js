@@ -19,7 +19,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { AuthContext } from "../../../../Context/AuthContext";
 import useSkillRegexSearch from "../../../../Hook/useSkillRegexSearch";
 import useGetSkillsByJobSeekerId from "../../../../Hook/useGetSkillsByJobSeekerId";
-import jts, { dbserver } from "../../../../API/jts";
+import jts from "../../../../API/jts";
 import { ModalContext } from "../../../../Context/ModalContext";
 import { FaceRetouchingOffSharp } from "@mui/icons-material";
 import useGetProfileImage from "../../../../Hook/useGetProfileImage ";
@@ -158,7 +158,7 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
                   onClick={() => {
                     openModal("UPLOAD_PROFILE_IMAGE");
                   }}
-                  src={`${dbserver}${user.profileImageUrl}`}
+                  src={`${process.env.REACT_APP_SERVER_URL}${user.profileImageUrl}`}
                 >
                   <InsertDriveFileIcon fontSize="large" />
                 </Avatar>

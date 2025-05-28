@@ -14,11 +14,12 @@ import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import jts from "../../../API/jts";
 import { ModalContext } from "../../../Context/ModalContext";
 import { AuthContext } from "../../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const HomepageJobLister = ({ jobs, title }) => {
   const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
-
+  const navigate = useNavigate();
   return (
     <Container
       maxWidth="md"
@@ -61,6 +62,7 @@ const JobCard = ({
   user,
 }) => {
   const { openModal } = useContext(ModalContext);
+  const navigate = useNavigate();
 
   return (
     <Grid item xs={12} sm={6} md={12} key={jobId}>
@@ -73,11 +75,13 @@ const JobCard = ({
           transition: "all 0.3s ease",
           position: "relative",
           fontFamily: "'Poppins', sans-serif",
+          cursor: "pointer",
           "&:hover": {
             boxShadow: "0 8px 22px rgba(0,0,0,0.12)",
             transform: "translateY(-3px)",
           },
         }}
+        onClick={() => navigate(`/job/${jobId}`)} // 🔁 redirect on click
       >
         <PushPinRoundedIcon
           sx={{
@@ -139,7 +143,8 @@ const JobCard = ({
                 backgroundColor: "#fb8c00",
               },
             }}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation(); // ✅ prevent card click
               if (user.jobSeekerProfile.resume.length > 0) {
                 openModal("APPLY_TO_JOB", {
                   jobId,

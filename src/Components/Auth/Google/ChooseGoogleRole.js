@@ -10,7 +10,7 @@ const ChooseGoogleRole = () => {
   const handleContinue = () => {
     const encodedState = encodeURIComponent(`${role}|${companyName}`);
     alert(encodedState);
-    window.location.href = `http://localhost:4000/users/google?state=${encodedState}`;
+    window.location.href = `${process.env.REACT_APP_SERVER_URL}/users/google?state=${encodedState}`;
   };
 
   return (

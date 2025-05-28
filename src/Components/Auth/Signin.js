@@ -49,7 +49,9 @@ const SignIn = () => {
       role: googleRole,
       ...(googleRole === "employer" && companyName ? { companyName } : {}),
     });
-    window.location.href = `http://localhost:4000/users/google?${params.toString()}`;
+    window.location.href = `${
+      process.env.REACT_APP_SERVER_URL
+    }/users/google?${params.toString()}`;
   };
 
   return (

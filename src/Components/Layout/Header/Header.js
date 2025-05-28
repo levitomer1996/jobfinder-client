@@ -12,7 +12,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { AuthContext } from "../../../Context/AuthContext";
 import UserIcons from "./HeaderComponents/UserIcons";
 import logo from "../../../Asstets/LOGO/HeaderLogo.png";
-import { dbserver } from "../../../API/jts";
 
 const Header = () => {
   const { user, isLogged } = useContext(AuthContext);
@@ -89,7 +88,7 @@ const Header = () => {
         >
           {isLogged ? (
             <UserIcons
-              profileImageUrl={`${dbserver}${user.profileImageUrl}`}
+              profileImageUrl={`${process.env.REACT_APP_SERVER_URL}${user.profileImageUrl}`}
               unreadedChats={user.unreadedChats}
             />
           ) : (

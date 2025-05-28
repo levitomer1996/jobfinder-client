@@ -22,7 +22,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import { AuthContext } from "../../Context/AuthContext";
 import useGetChats from "../../Hook/useGetChats";
 import socket from "../../API/socket";
-import { dbserver } from "../../API/jts";
 
 const ChatPage = () => {
   const { user, loading_auth } = useContext(AuthContext);
@@ -236,7 +235,7 @@ const ChatPage = () => {
                 <ListItemAvatar>
                   <Badge color="success" variant="dot" overlap="circular">
                     <Avatar
-                      src={`${dbserver}${chatItem.otherParticipant.profileImageUrl}`}
+                      src={`${process.env.REACT_APP_SERVER_URL}${chatItem.otherParticipant.profileImageUrl}`}
                     >
                       {chatItem.otherParticipant.name.charAt(0)}
                     </Avatar>

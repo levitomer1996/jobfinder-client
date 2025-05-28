@@ -4,16 +4,16 @@ import {
   TextField,
   Button,
   Typography,
-  Divider,
   Box,
   CircularProgress,
   Alert,
+  FormControlLabel,
+  Checkbox,
+  Link,
+  Autocomplete,
 } from "@mui/material";
-import PersonIcon from "@mui/icons-material/Person";
-import EmailIcon from "@mui/icons-material/Email";
-import LockIcon from "@mui/icons-material/Lock";
-import BusinessIcon from "@mui/icons-material/Business";
 import jts from "../../../API/jts";
+import useSearchCompanies from "../../../Hook/useSearchCompanies";
 
 const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
   const [formData, setFormData] = useState({
@@ -23,24 +23,47 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
     confirmPassword: "",
     phoneNumber: "",
     companyName: "",
+    agree: false,
   });
   const [spinner, setSpinner] = useState(false);
   const [success, setSuccess] = useState(null);
   const [errorText, setErrorText] = useState(null);
   const [error, setError] = useState(false);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+
+  const [showCreateCompany, setShowCreateCompany] = useState(false);
+  const [newCompanyData, setNewCompanyData] = useState({
+    name: "",
+    description: "",
+    location: "",
+  });
+
+  const { companies, loading: loadingCompanies } = useSearchCompanies(
+    formData.companyName
+  );
 
   const renderSuccess = (s, e) => {
-    if (e) {
-      return <Alert severity="error">{errorText}</Alert>;
-    } else if (s) {
-      return <Alert severity="success">{s}</Alert>;
-    } else {
-      return null;
-    }
+    if (e) return <Alert severity="error">{errorText}</Alert>;
+    if (s) return <Alert severity="success">{s}</Alert>;
+    return null;
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    const newFormData = {
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    };
+    setFormData(newFormData);
+
+    if (
+      name === "confirmPassword" ||
+      (name === "password" && newFormData.confirmPassword.length > 0)
+    ) {
+      setConfirmPasswordError(
+        newFormData.confirmPassword !== newFormData.password
+      );
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -49,13 +72,44 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
     setError(false);
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match!");
+      setErrorText("Passwords do not match!");
+      setError(true);
       setSpinner(false);
       return;
     }
 
     try {
-      await jts.post("/users/register/employer", formData);
+      let companyWasFound = !showCreateCompany;
+      let companyId = null;
+
+      if (showCreateCompany) {
+        const companyResponse = await jts.post("/company", newCompanyData);
+        companyId = companyResponse.data._id;
+      } else {
+        const existingCompany = companies.find(
+          (c) => c === formData.companyName
+        );
+        if (existingCompany) {
+          const fetchCompany = await jts.get(
+            `/company/search?name=${encodeURIComponent(existingCompany)}`
+          );
+          companyId = fetchCompany.data[0]?._id; // backend must support returning full objects
+        }
+      }
+
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        phoneNumber: formData.phoneNumber,
+        agree: formData.agree,
+        company: companyWasFound
+          ? { found: true, companyId }
+          : { found: false, ...newCompanyData },
+      };
+
+      await jts.post("/users/register/employer", payload);
       setSuccess("Registration successful!");
       SubmitEmployerForm();
     } catch (err) {
@@ -70,127 +124,201 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
     <Container
       maxWidth="xs"
       sx={{
-        background: "white",
-        borderRadius: "16px",
-        boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-        p: 3,
-        mt: 5,
+        background: "#fff",
+        borderRadius: 3,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+        p: 4,
+        mt: 6,
+        textAlign: "center",
       }}
     >
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        textAlign="center"
-        color="orange"
-      >
-        Sign Up
+      <Typography variant="h5" fontWeight="bold" color="orange" mb={1}>
+        Create Your Account
       </Typography>
-      <Typography variant="body2" textAlign="center" color="gray" mb={2}>
-        Create your employer account
+      <Typography variant="body2" color="gray" mb={2}>
+        Maximize productivity with real-time insights, job tracking, and more.
       </Typography>
+
       {renderSuccess(success, error)}
-      <form onSubmit={handleSubmit}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1, gap: 1 }}>
-          <PersonIcon color="action" />
-          <TextField
-            variant="outlined"
-            placeholder="Full Name"
-            name="name"
-            fullWidth
-            size="small"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1, gap: 1 }}>
-          <EmailIcon color="action" />
-          <TextField
-            variant="outlined"
-            placeholder="Email"
-            name="email"
-            type="email"
-            fullWidth
-            size="small"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </Box>
+      <Box component="form" onSubmit={handleSubmit}>
+        <TextField
+          fullWidth
+          margin="dense"
+          placeholder="Full Name *"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
 
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1, gap: 1 }}>
-          <LockIcon color="action" />
-          <TextField
-            variant="outlined"
-            placeholder="Password"
-            name="password"
-            type="password"
-            fullWidth
-            size="small"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </Box>
+        <TextField
+          fullWidth
+          margin="dense"
+          placeholder="Email *"
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
 
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1, gap: 1 }}>
-          <LockIcon color="action" />
-          <TextField
-            variant="outlined"
-            placeholder="Confirm Password"
-            name="confirmPassword"
-            type="password"
-            fullWidth
-            size="small"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-        </Box>
+        <TextField
+          fullWidth
+          margin="dense"
+          placeholder="Password *"
+          name="password"
+          type="password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <Typography
+          variant="caption"
+          display="block"
+          color="gray"
+          textAlign="left"
+          pl={1}
+        >
+          Enter 6 or more characters
+        </Typography>
 
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1, gap: 1 }}>
-          <BusinessIcon color="action" />
-          <TextField
-            variant="outlined"
-            placeholder="Company Name"
-            name="companyName"
-            fullWidth
-            size="small"
-            value={formData.companyName}
-            onChange={handleChange}
-            required
+        <TextField
+          fullWidth
+          margin="dense"
+          placeholder="Confirm Password *"
+          name="confirmPassword"
+          type="password"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          required
+          error={confirmPasswordError}
+          helperText={confirmPasswordError ? "Passwords do not match." : ""}
+        />
+
+        <TextField
+          fullWidth
+          margin="dense"
+          placeholder="Phone Number"
+          name="phoneNumber"
+          value={formData.phoneNumber}
+          onChange={handleChange}
+        />
+
+        <Autocomplete
+          freeSolo
+          options={companies}
+          loading={loadingCompanies}
+          inputValue={formData.companyName}
+          onInputChange={(event, newInputValue) => {
+            setFormData((prev) => ({ ...prev, companyName: newInputValue }));
+            const companyExists = companies.includes(newInputValue);
+            setShowCreateCompany(newInputValue && !companyExists);
+            setNewCompanyData((prev) => ({ ...prev, name: newInputValue }));
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              fullWidth
+              margin="dense"
+              placeholder="Company Name *"
+              required
+            />
+          )}
+        />
+
+        {showCreateCompany && (
+          <Box sx={{ mt: 1, textAlign: "left" }}>
+            <Typography variant="body2" fontWeight="bold">
+              Create new company: "{formData.companyName}"
+            </Typography>
+
+            <TextField
+              fullWidth
+              margin="dense"
+              placeholder="Company Description (optional)"
+              value={newCompanyData.description}
+              onChange={(e) =>
+                setNewCompanyData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
+            />
+
+            <TextField
+              fullWidth
+              margin="dense"
+              placeholder="Location (optional)"
+              value={newCompanyData.location}
+              onChange={(e) =>
+                setNewCompanyData((prev) => ({
+                  ...prev,
+                  location: e.target.value,
+                }))
+              }
+            />
+          </Box>
+        )}
+
+        <Box textAlign="left" mt={1}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.agree}
+                onChange={handleChange}
+                name="agree"
+                required
+              />
+            }
+            label={
+              <Typography variant="body2">
+                I agree to the{" "}
+                <Link href="#" color="primary">
+                  Terms
+                </Link>
+                ,{" "}
+                <Link href="#" color="primary">
+                  Privacy Policy
+                </Link>{" "}
+                and{" "}
+                <Link href="#" color="primary">
+                  DPA
+                </Link>
+                .
+              </Typography>
+            }
           />
         </Box>
 
         <Button
           type="submit"
-          variant="contained"
           fullWidth
+          variant="contained"
           sx={{
             mt: 2,
             bgcolor: "orange",
+            borderRadius: 3,
+            fontWeight: "bold",
+            py: 1.2,
+            fontSize: "1rem",
+            textTransform: "none",
             "&:hover": { bgcolor: "#ff8c00" },
-            borderRadius: "24px",
           }}
         >
-          {spinner ? <CircularProgress size={24} color="inherit" /> : "Sign Up"}
+          {spinner ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "Create My Account"
+          )}
         </Button>
-      </form>
+      </Box>
 
-      <Divider sx={{ my: 2 }}>OR</Divider>
-
-      <Button
-        variant="outlined"
-        fullWidth
-        sx={{ borderColor: "orange", color: "orange", borderRadius: "24px" }}
-      >
-        Sign In with Google
-      </Button>
-
-      <Typography variant="body2" textAlign="center" mt={2}>
+      <Typography variant="body2" mt={2}>
         Already have an account?{" "}
-        <span style={{ color: "orange", cursor: "pointer" }}>Login</span>
+        <Link href="#" sx={{ color: "orange", fontWeight: "bold" }}>
+          Login
+        </Link>
       </Typography>
     </Container>
   );
