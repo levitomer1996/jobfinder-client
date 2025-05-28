@@ -84,11 +84,13 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
 
       if (showCreateCompany) {
         const companyResponse = await jts.post("/company", newCompanyData);
+
         companyId = companyResponse.data._id;
       } else {
         const existingCompany = companies.find(
           (c) => c === formData.companyName
         );
+
         if (existingCompany) {
           const fetchCompany = await jts.get(
             `/company/search?name=${encodeURIComponent(existingCompany)}`

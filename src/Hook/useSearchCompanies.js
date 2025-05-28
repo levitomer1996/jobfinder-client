@@ -17,7 +17,8 @@ const useSearchCompanies = (searchTerm) => {
         const res = await jts.get(
           `/company/search?name=${encodeURIComponent(searchTerm)}`
         );
-        setCompanies(res.data);
+
+        setCompanies(res.data.map((c) => c.name));
       } catch (err) {
         console.error("Failed to search companies", err);
       } finally {
