@@ -21,6 +21,7 @@ const useGetApplicantsByJobId = (jobId) => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(res.data)
         setApplicants(res.data);
       } catch (err) {
         console.error("Failed to fetch applicants", err);
