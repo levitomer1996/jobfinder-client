@@ -22,7 +22,7 @@ const SignIn = () => {
   const [success, setSuccess] = useState(null);
   const [googleRole, setGoogleRole] = useState("jobseeker");
   const [companyName, setCompanyName] = useState("");
-
+  const [role, setRole] = useState(null);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -44,15 +44,15 @@ const SignIn = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    const params = new URLSearchParams({
-      role: googleRole,
-      ...(googleRole === "employer" && companyName ? { companyName } : {}),
-    });
-    window.location.href = `${
-      process.env.REACT_APP_SERVER_URL
-    }/users/google?${params.toString()}`;
-  };
+  // const handleGoogleLogin = () => {
+  //   const params = new URLSearchParams({
+  //     role: googleRole,
+  //     ...(googleRole === "employer" && companyName ? { companyName } : {}),
+  //   });
+  //   window.location.href = `${
+  //     process.env.REACT_APP_SERVER_URL
+  //   }/users/google?${params.toString()}`;
+  // };
 
   return (
     <Container
@@ -79,38 +79,14 @@ const SignIn = () => {
         policies.
       </Typography>
 
-      {/* Choose Role */}
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Login as</InputLabel>
-        <Select
-          value={googleRole}
-          label="Login as"
-          onChange={(e) => setGoogleRole(e.target.value)}
-        >
-          <MenuItem value="jobseeker">Job Seeker</MenuItem>
-          <MenuItem value="employer">Employer</MenuItem>
-        </Select>
-      </FormControl>
-
-      {/* Company Name (Only for Employer) */}
-      {googleRole === "employer" && (
-        <TextField
-          label="Company Name"
-          variant="outlined"
-          fullWidth
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          sx={{ mb: 2 }}
-        />
-      )}
-
-      {/* Sign in with Google */}
       <Button
         variant="outlined"
         fullWidth
         startIcon={<GoogleIcon />}
         onClick={() => {
-          window.location.href = "/choose-role";
+          const encodedState = encodeURIComponent(`${role}|${companyName}`);
+
+          window.location.href = `${process.env.REACT_APP_SERVER_URL}/users/google?state=${encodedState}`;
         }}
         sx={{
           mb: 2,

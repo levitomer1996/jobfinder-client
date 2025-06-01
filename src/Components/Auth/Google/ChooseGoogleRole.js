@@ -20,36 +20,7 @@ const ChooseGoogleRole = () => {
       </Typography>
       <Typography>Select your account type:</Typography>
 
-      <Box display="flex" gap={2} mt={2} mb={2}>
-        <Button
-          variant={role === "jobseeker" ? "contained" : "outlined"}
-          onClick={() => setRole("jobseeker")}
-        >
-          Job Seeker
-        </Button>
-        <Button
-          variant={role === "employer" ? "contained" : "outlined"}
-          onClick={() => setRole("employer")}
-        >
-          Employer
-        </Button>
-      </Box>
-
-      {role === "employer" && (
-        <TextField
-          label="Company Name"
-          fullWidth
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          sx={{ mb: 2 }}
-        />
-      )}
-
-      <Button
-        disabled={!role || (role === "employer" && !companyName.trim())}
-        variant="contained"
-        onClick={handleContinue}
-      >
+      <Button variant="contained" onClick={handleContinue}>
         Continue with Google →
       </Button>
     </Container>

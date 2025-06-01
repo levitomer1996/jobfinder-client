@@ -12,7 +12,7 @@ const OAuth2Callback = () => {
       localStorage.setItem("token", token);
       navigate("/");
     } else {
-      navigate("/signin");
+      navigate("/");
     }
   }, []);
 
