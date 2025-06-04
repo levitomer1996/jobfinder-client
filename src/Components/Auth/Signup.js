@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import SignupStepOneChooseType from "./SignupComponents/SignupStepOneChooseType";
 import SignupStepTwoFillDetails from "./SignupComponents/SignupStepTwoFillDetails";
-import jts from "../../API/jts";
+
 import { SignupFlowContext } from "../../Context/SignupFlowContext";
 import { Navigate } from "react-router-dom";
 import EmployerSignup from "./SignupComponents/EmployerSignup";
@@ -16,7 +16,7 @@ const Signup = () => {
   } = useContext(SignupFlowContext);
 
   useEffect(() => {
-    if (state.role == "jobseeker" || state.role == "employer") {
+    if (state.role === "jobseeker" || state.role === "employer") {
       setSignupFlowStep(2);
     }
   }, [state.role]);

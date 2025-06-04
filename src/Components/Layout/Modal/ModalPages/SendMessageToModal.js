@@ -10,7 +10,6 @@ import {
   Avatar,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import axios from "axios";
 import socket from "../../../../API/socket";
 import { ModalContext } from "../../../../Context/ModalContext";
 import { AuthContext } from "../../../../Context/AuthContext";

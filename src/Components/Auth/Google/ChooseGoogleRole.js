@@ -1,11 +1,11 @@
 // src/pages/ChooseGoogleRole.jsx
 
 import React, { useState } from "react";
-import { Container, Typography, Button, TextField, Box } from "@mui/material";
+import { Container, Typography, Button } from "@mui/material";
 
 const ChooseGoogleRole = () => {
-  const [role, setRole] = useState(null);
-  const [companyName, setCompanyName] = useState("");
+  const [role] = useState(null);
+  const [companyName] = useState("");
 
   const handleContinue = () => {
     const encodedState = encodeURIComponent(`${role}|${companyName}`);

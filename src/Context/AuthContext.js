@@ -1,5 +1,4 @@
-import React, { createContext, useReducer, useEffect, useContext } from "react";
-import { Navigate } from "react-router-dom";
+import React, { createContext, useReducer, useEffect } from "react";
 import jts from "../API/jts"; // ✅ Import Axios instance
 
 export const AuthContext = createContext();

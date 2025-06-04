@@ -7,22 +7,17 @@ import {
   Divider,
   Alert,
   Link,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
 } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
-import AppleIcon from "@mui/icons-material/Apple";
 import jts from "../../API/jts";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [googleRole, setGoogleRole] = useState("jobseeker");
-  const [companyName, setCompanyName] = useState("");
-  const [role, setRole] = useState(null);
+
+  const [companyName] = useState("");
+  const [role] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

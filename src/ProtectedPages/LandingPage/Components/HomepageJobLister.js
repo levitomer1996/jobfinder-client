@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Container,
   Typography,
@@ -11,15 +11,14 @@ import {
 import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
 import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
 import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
-import jts from "../../../API/jts";
+
 import { ModalContext } from "../../../Context/ModalContext";
 import { AuthContext } from "../../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const HomepageJobLister = ({ jobs, title }) => {
-  const [loading, setLoading] = useState(true);
   const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
+
   return (
     <Container
       maxWidth="md"
