@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Typography, Box, Chip, Grid, Paper } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Box,
+  Chip,
+  Grid,
+  Paper,
+  Button,
+} from "@mui/material";
 import { Helmet } from "react-helmet";
 import useGetJob from "../../Hook/useGetJob";
+import { AuthContext } from "../../Context/AuthContext";
+import { ModalContext } from "../../Context/ModalContext";
 
 const JobPage = () => {
   const { id } = useParams();
   const { job, useGetJob_loading, useGetJob_error } = useGetJob(id);
-
+  const { user } = useContext(AuthContext);
+  const { openModal } = useContext(ModalContext);
   if (useGetJob_loading) return <Typography>Loading job details...</Typography>;
   if (useGetJob_error)
     return (
@@ -16,11 +27,18 @@ const JobPage = () => {
       </Typography>
     );
 
+  const metaDescription =
+    job.description?.length > 200
+      ? `${job.description.slice(0, 197)}...`
+      : job.description;
+
   return (
     <>
       <Helmet>
         <title>{job.title} | JobFinder</title>
-        <meta name="description" content={job.description?.slice(0, 160)} />
+        <meta name="description" content={metaDescription} />
+        <meta property="og:title" content={`${job.title} | JobFinder`} />
+        <meta property="og:description" content={job.description} />
       </Helmet>
 
       <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
@@ -87,6 +105,36 @@ const JobPage = () => {
                 <Chip key={skill._id} label={skill.name} color="primary" />
               ))}
             </Box>
+            <Button
+              variant="contained"
+              size="small"
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                backgroundColor: "#ff9800",
+                fontWeight: 500,
+                px: 3,
+                py: 0.8,
+                mt: 1,
+                fontFamily: "'Poppins', sans-serif",
+                "&:hover": {
+                  backgroundColor: "#fb8c00",
+                },
+              }}
+              onClick={(e) => {
+                e.stopPropagation(); // ✅ prevent card click
+                if (user.jobSeekerProfile.resume.length > 0) {
+                  openModal("APPLY_TO_JOB", {
+                    jobId: id,
+                    jobSeekerId: user.jobSeekerProfile._id,
+                  });
+                } else {
+                  openModal("RESUME_UPLOAD");
+                }
+              }}
+            >
+              Apply Now
+            </Button>
           </Box>
         </Paper>
       </Container>

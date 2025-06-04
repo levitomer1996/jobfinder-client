@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Box,
   Typography,
@@ -18,15 +18,16 @@ import {
   Link,
 } from "@mui/material";
 import useGetApplicantsByJobId from "../../../../Hook/useGetApplicantsByJobId";
+import { ModalContext } from "../../../../Context/ModalContext";
 
 const ShowApplicantsModal = ({ content }) => {
   const { applicants, loading, error } = useGetApplicantsByJobId(content.jobId);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { openModal } = useContext(ModalContext);
 
-  const handleSendMessage = (applicant) => {
-    console.log("Send message to", applicant.name);
-    // Trigger chat or open modal
+  const handleSendMessage = ({ name, email, _id }) => {
+    openModal("SEND_MESSAGE_TO", { name, email, _id });
   };
 
   return (
@@ -77,7 +78,14 @@ const ShowApplicantsModal = ({ content }) => {
                   <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => handleSendMessage(applicant)}
+                    onClick={() => {
+                      console.log(applicant);
+                      handleSendMessage({
+                        name: applicant.name,
+                        email: applicant.email,
+                        _id: applicant._id,
+                      });
+                    }}
                   >
                     Send Message
                   </Button>

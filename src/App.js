@@ -18,7 +18,6 @@ function App() {
       >
         <AuthProvider>
           <ModalProvider>
-            <Header />
             <AppRouter />
             <GlobalModal />
           </ModalProvider>

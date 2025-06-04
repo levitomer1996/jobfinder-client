@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Container,
+  Box,
   Typography,
   Paper,
   Grid,
@@ -14,9 +14,10 @@ import {
   TextField,
   Autocomplete,
   IconButton,
+  Stack,
+  Divider,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Delete } from "@mui/icons-material";
 import jts from "../../../../API/jts";
 import JobCard from "./ManageJobsPageComps/JobCard";
 import useSkillRegexSearch from "../../../../Hook/useSkillRegexSearch";
@@ -26,44 +27,37 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
   const [newJob, setNewJob] = useState({
     title: "",
     description: "",
-    salaryRangeMin: null,
-    salaryRangeMax: null,
+    salaryRangeMin: "",
+    salaryRangeMax: "",
     location: "",
     requiredSkills: [""],
   });
 
+  const { skillsResults, searchSkills } = useSkillRegexSearch();
+
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setNewJob({
+      title: "",
+      description: "",
+      salaryRangeMin: "",
+      salaryRangeMax: "",
+      location: "",
+      requiredSkills: [""],
+    });
+    setOpen(false);
+  };
 
   const handleAddJob = async () => {
     try {
       const token = localStorage.getItem("token");
-      console.log(newJob);
-      const response = await jts.post("jobs/create", newJob, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await jts.post("jobs/create", newJob, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(response.data);
     } catch (error) {
       console.error("Failed to create job", error);
     }
     handleClose();
-  };
-
-  const handleDeleteJob = (id) => {
-    console.log(`Deleting job ID: ${id}`);
-    // Implement delete logic here
-  };
-
-  const { skillsResults, searchSkills } = useSkillRegexSearch();
-
-  const formatError = (err) => {
-    if (!err) return null;
-    if (typeof err === "string") return err;
-    return (
-      err?.response?.data?.message || err?.message || "Something went wrong."
-    );
   };
 
   const handleSkillChange = (index, value) => {
@@ -82,168 +76,160 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
   };
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        mt: 4,
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
-        paddingBottom: "50px",
-      }}
-    >
-      <Paper
+    <Box sx={{ p: 4, backgroundColor: "#f7f9fc", minHeight: "100vh" }}>
+      <Box
         sx={{
-          p: 5,
-          width: "100%",
-          maxWidth: "1200px",
-          background: "rgba(255, 255, 255, 0.2)",
-          backdropFilter: "blur(10px)",
-          borderRadius: 4,
-          boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)",
-          textAlign: "center",
-          color: "white",
+          mb: 4,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
-        <Typography variant="h4" fontWeight="bold" sx={{ mb: 3 }}>
-          🚀 Manage Your Job Listings
+        <Typography variant="h4" fontWeight="bold">
+          Manage Job Listings
         </Typography>
-
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          sx={{
-            mb: 4,
-            bgcolor: "#ff9800",
-            color: "#fff",
-            fontWeight: "bold",
-            borderRadius: 3,
-            padding: "12px 24px",
-            transition: "all 0.3s ease",
-            "&:hover": { bgcolor: "#f57c00", transform: "scale(1.05)" },
-          }}
-          onClick={handleOpen}
-        >
-          Post a New Job
+        <Button variant="contained" color="warning" onClick={handleOpen}>
+          Create New Job
         </Button>
+      </Box>
 
-        {loading && <CircularProgress />}
-        {error && <Alert severity="error">{formatError(error)}</Alert>}
-
+      {loading ? (
+        <Box display="flex" justifyContent="center" mt={6}>
+          <CircularProgress color="warning" />
+        </Box>
+      ) : error ? (
+        <Alert severity="error">{error?.message || "Error loading jobs"}</Alert>
+      ) : (
         <Grid container spacing={3}>
           {jobs.map((job, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <JobCard job={job} onDelete={handleDeleteJob} />
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <JobCard job={job} onDelete={() => console.log("delete")} />
             </Grid>
           ))}
         </Grid>
-      </Paper>
+      )}
 
-      {/* Add Job Dialog */}
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      {/* Job Creation Dialog */}
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle
-          sx={{ fontWeight: "bold", textAlign: "center", color: "#ff9800" }}
+          sx={{ fontWeight: "bold", borderBottom: "1px solid #e0e0e0" }}
         >
-          Create a Job Posting
+          New Job Posting
         </DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Job Title"
-            fullWidth
-            margin="normal"
-            value={newJob.title}
-            onChange={(e) => setNewJob({ ...newJob, title: e.target.value })}
-          />
-          <TextField
-            label="Job Description"
-            fullWidth
-            margin="normal"
-            multiline
-            rows={3}
-            value={newJob.description}
-            onChange={(e) =>
-              setNewJob({ ...newJob, description: e.target.value })
-            }
-          />
-          <TextField
-            label="Location"
-            fullWidth
-            margin="normal"
-            value={newJob.location}
-            onChange={(e) => setNewJob({ ...newJob, location: e.target.value })}
-          />
-          <TextField
-            label="Salary Min"
-            type="number"
-            fullWidth
-            margin="normal"
-            value={newJob.salaryRangeMin}
-            onChange={(e) =>
-              setNewJob({ ...newJob, salaryRangeMin: e.target.value })
-            }
-          />
-          <TextField
-            label="Salary Max"
-            type="number"
-            fullWidth
-            margin="normal"
-            value={newJob.salaryRangeMax}
-            onChange={(e) =>
-              setNewJob({ ...newJob, salaryRangeMax: e.target.value })
-            }
-          />
-
-          {newJob.requiredSkills.map((skill, index) => (
-            <Grid container spacing={1} alignItems="center" key={index}>
-              <Grid item xs={11}>
-                <Autocomplete
-                  freeSolo
-                  options={skillsResults.map((s) => s.name)}
-                  value={skill}
-                  onInputChange={(event, newValue) => {
-                    handleSkillChange(index, newValue);
-                    searchSkills(newValue);
-                  }}
-                  onChange={(event, newValue) => {
-                    handleSkillChange(index, newValue || "");
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label={`Required Skill ${index + 1}`}
-                      fullWidth
-                      margin="normal"
-                    />
-                  )}
+        <DialogContent sx={{ py: 3 }}>
+          <Stack spacing={2}>
+            <TextField
+              label="Title"
+              fullWidth
+              value={newJob.title}
+              onChange={(e) => setNewJob({ ...newJob, title: e.target.value })}
+            />
+            <TextField
+              label="Description"
+              fullWidth
+              multiline
+              minRows={3}
+              value={newJob.description}
+              onChange={(e) =>
+                setNewJob({ ...newJob, description: e.target.value })
+              }
+            />
+            <TextField
+              label="Location"
+              fullWidth
+              value={newJob.location}
+              onChange={(e) =>
+                setNewJob({ ...newJob, location: e.target.value })
+              }
+            />
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  label="Salary Min"
+                  fullWidth
+                  type="number"
+                  value={newJob.salaryRangeMin}
+                  onChange={(e) =>
+                    setNewJob({ ...newJob, salaryRangeMin: e.target.value })
+                  }
                 />
               </Grid>
-              <Grid item xs={1}>
-                <IconButton
-                  onClick={() => handleRemoveSkillField(index)}
-                  color="error"
-                >
-                  <DeleteIcon />
-                </IconButton>
+              <Grid item xs={6}>
+                <TextField
+                  label="Salary Max"
+                  fullWidth
+                  type="number"
+                  value={newJob.salaryRangeMax}
+                  onChange={(e) =>
+                    setNewJob({ ...newJob, salaryRangeMax: e.target.value })
+                  }
+                />
               </Grid>
             </Grid>
-          ))}
 
-          <Button onClick={handleAddSkillField} sx={{ mt: 1 }}>
-            + Add Another Skill
-          </Button>
+            <Divider sx={{ my: 2 }} />
+
+            <Typography variant="subtitle1" fontWeight="bold">
+              Required Skills
+            </Typography>
+
+            {newJob.requiredSkills.map((skill, index) => (
+              <Grid container spacing={1} alignItems="center" key={index}>
+                <Grid item xs={11}>
+                  <Autocomplete
+                    freeSolo
+                    options={skillsResults.map((s) => s.name)}
+                    value={skill}
+                    onInputChange={(e, value) => {
+                      handleSkillChange(index, value);
+                      searchSkills(value);
+                    }}
+                    onChange={(e, newValue) =>
+                      handleSkillChange(index, newValue || "")
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={`Skill #${index + 1}`}
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={1}>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleRemoveSkillField(index)}
+                  >
+                    <Delete />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            ))}
+
+            <Box>
+              <Button onClick={handleAddSkillField} size="small">
+                + Add Another Skill
+              </Button>
+            </Box>
+          </Stack>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-          <Button onClick={handleClose} sx={{ color: "gray" }}>
+        <DialogActions
+          sx={{
+            borderTop: "1px solid #e0e0e0",
+            justifyContent: "space-between",
+            px: 3,
+          }}
+        >
+          <Button onClick={handleClose} variant="text">
             Cancel
           </Button>
-          <Button onClick={handleAddJob} variant="contained">
+          <Button variant="contained" color="warning" onClick={handleAddJob}>
             Post Job
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </Box>
   );
 };
 

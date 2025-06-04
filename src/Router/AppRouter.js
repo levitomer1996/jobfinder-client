@@ -12,10 +12,12 @@ import ChatPage from "../ProtectedPages/ChatPage/ChatPage";
 import OAuth2Callback from "../Components/Auth/Google/OAuth2Callback";
 import ChooseGoogleRole from "../Components/Auth/Google/ChooseGoogleRole";
 import JobPage from "../Pages/JobPage/JobPage";
+import Header from "../Components/Layout/Header/Header";
 
 const AppRouter = () => {
   return (
     <Router>
+      <Header />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route

@@ -23,6 +23,7 @@ const SignIn = () => {
   const [googleRole, setGoogleRole] = useState("jobseeker");
   const [companyName, setCompanyName] = useState("");
   const [role, setRole] = useState(null);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -44,20 +45,23 @@ const SignIn = () => {
     }
   };
 
-  // const handleGoogleLogin = () => {
-  //   const params = new URLSearchParams({
-  //     role: googleRole,
-  //     ...(googleRole === "employer" && companyName ? { companyName } : {}),
-  //   });
-  //   window.location.href = `${
-  //     process.env.REACT_APP_SERVER_URL
-  //   }/users/google?${params.toString()}`;
-  // };
+  // Determine if the form is valid to enable the button
+  const isFormValid =
+    formData.email.trim() !== "" && formData.password.trim() !== "";
 
   return (
     <Container
       maxWidth="sm"
-      sx={{ mt: 5, p: 3, bgcolor: "white", boxShadow: 3, borderRadius: 2 }}
+      sx={{
+        mt: 5,
+        p: 3,
+        bgcolor: "white",
+        boxShadow: 3,
+        borderRadius: 2,
+        // Responsive adjustments for padding and margin top
+        mt: { xs: 3, sm: 5 },
+        p: { xs: 2, sm: 3 },
+      }}
     >
       {/* Title Section */}
       <Typography variant="h5" fontWeight="bold" gutterBottom>
@@ -138,15 +142,19 @@ const SignIn = () => {
         fullWidth
         onClick={handleSubmit}
         sx={{
-          backgroundColor: "#b0c4de",
+          // Change background color based on form validity
+          backgroundColor: isFormValid ? "#ff6f00" : "#b0c4de",
           color: "white",
           py: 1.5,
           borderRadius: 2,
           textTransform: "none",
           fontWeight: "bold",
-          "&:hover": { backgroundColor: "#9eb2c5" },
+          "&:hover": {
+            // Change hover background based on form validity
+            backgroundColor: isFormValid ? "#e65100" : "#9eb2c5",
+          },
         }}
-        disabled={!formData.email.trim() || !formData.password.trim()}
+        disabled={!isFormValid} // Disable if form is not valid
       >
         Continue →
       </Button>

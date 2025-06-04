@@ -62,10 +62,6 @@ const JobseekerViewJobModal = ({ content }) => {
 
   const { name, email, _id, content: job } = cardDetails;
 
-  const handleMessage = () => {
-    openModal("SEND_MESSAGE_TO", { name, email, _id });
-  };
-
   return (
     <Box
       sx={{
@@ -103,23 +99,6 @@ const JobseekerViewJobModal = ({ content }) => {
               {email}
             </Typography>
           </Box>
-        </Grid>
-        <Grid item mt={isMobile ? 2 : 0}>
-          <Button
-            fullWidth={isMobile}
-            variant="contained"
-            sx={{
-              backgroundColor: "#ff9800",
-              "&:hover": { backgroundColor: "#fb8c00" },
-              borderRadius: 2,
-              textTransform: "none",
-              fontWeight: 500,
-            }}
-            startIcon={<ChatIcon />}
-            onClick={handleMessage}
-          >
-            Message
-          </Button>
         </Grid>
       </Grid>
 

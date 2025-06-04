@@ -11,37 +11,36 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import axios from "axios";
-import jts from "../../../../API/jts";
+import socket from "../../../../API/socket";
 import { ModalContext } from "../../../../Context/ModalContext";
+import { AuthContext } from "../../../../Context/AuthContext";
 
 const SendMessageToModal = ({ content }) => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const { name, email, _id: receiverId } = content || {};
   const { closeModal } = useContext(ModalContext);
+  const { user } = useContext(AuthContext);
   const handleSend = async () => {
     if (!message.trim()) return;
+
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
 
-      await jts.post(
-        "chat/create",
-        {
-          _id: receiverId,
-          message: message,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const token = localStorage.getItem("token"); // if needed for auth later
+      const newMessage = {
+        senderId: user._id,
+        receiverId,
+        content: message,
+      };
 
-      setMessage("");
-      closeModal();
+      socket.emit("sendMessage", newMessage, (response) => {
+        console.log("✅ Message sent via gateway:", response);
+        setMessage("");
+        closeModal();
+      });
     } catch (error) {
-      console.error("Failed to create chat:", error);
+      console.error("❌ Failed to send message via socket:", error);
     } finally {
       setLoading(false);
     }

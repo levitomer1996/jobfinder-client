@@ -17,7 +17,7 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import { ModalContext } from "../../../../Context/ModalContext";
 import { AuthContext } from "../../../../Context/AuthContext";
-import jts from "../../../../API/jts";
+import socket from "../../../../API/socket";
 
 const ModalApplyToJob = () => {
   const { state, closeModal } = useContext(ModalContext);
@@ -40,19 +40,22 @@ const ModalApplyToJob = () => {
   };
 
   const handleSubmit = async () => {
+    console.log(state.content);
     setIsSubmitting(true);
-    console.log(formData);
     try {
-      const results = await jts.post("/applications/create", {
+      const applicationPayload = {
         jobId: formData.jobId,
         jobSeekerId: formData.jobSeekerId,
         resumeId: formData.preferedResume,
         coverLetter: formData.coverLetter,
+      };
+
+      socket.emit("createUserApplication", applicationPayload, (response) => {
+        console.log("✅ Application submitted via socket:", response);
+        closeModal();
       });
-      console.log(results);
-      closeModal();
     } catch (error) {
-      console.error("Error submitting application", error);
+      console.error("❌ Error sending application via socket", error);
     } finally {
       setIsSubmitting(false);
     }
