@@ -54,7 +54,7 @@ const ChatPage = () => {
       setOtherParticipant(activeChat.otherParticipant);
       socket.emit("joinRoom", activeChat.chat._id);
     }
-  }, [activeChatIndex, filteredChats]);
+  }, [activeChatIndex, chatList]);
 
   useEffect(() => {
     const handleNewMessage = (msg) => {
