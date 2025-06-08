@@ -2,22 +2,24 @@ import React, { useContext, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
-  IconButton,
   Button,
   Box,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+
 import { AuthContext } from "../../../Context/AuthContext";
 import UserIcons from "./HeaderComponents/UserIcons";
 import logo from "../../../Asstets/LOGO/HeaderLogo.png";
+import useGetChats from "../../../Hook/useGetChats";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { user, isLogged } = useContext(AuthContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const [chats, chats_loading, chats_error] = useGetChats();
+  const navigate = useNavigate();
   useEffect(() => {
     console.log(user);
   }, [user]);
@@ -90,6 +92,9 @@ const Header = () => {
             <UserIcons
               profileImageUrl={`${process.env.REACT_APP_SERVER_URL}${user.profileImageUrl}`}
               unreadedChats={user.unreadedChats}
+              chats={chats}
+              notifications={user.notifications}
+              navigate={navigate}
             />
           ) : (
             <Button

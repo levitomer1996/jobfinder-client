@@ -28,7 +28,7 @@ const useGetChats = () => {
     fetchChats();
   }, []);
 
-  return { chats, loading, error };
+  return [chats, loading, error];
 };
 
 export default useGetChats;

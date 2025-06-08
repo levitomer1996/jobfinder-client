@@ -33,7 +33,7 @@ const ChatPage = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { chats, loading } = useGetChats();
+  const [chats, loading] = useGetChats();
   const messagesEndRef = useRef(null);
 
   const [messages, setMessages] = useState([]);
