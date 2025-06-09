@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Typography,
@@ -6,31 +6,27 @@ import {
   Button,
   Alert,
   CircularProgress,
-  Box,
   Checkbox,
   FormControlLabel,
   Link,
 } from "@mui/material";
 import jts from "../../../API/jts";
+import { useNavigate } from "react-router-dom";
 
-const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
+const SignupStepTwoFillDetails = ({ setUser, error, submitFinalForm }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    phoneNumber: "",
   });
+  const navigator = useNavigate();
 
   const [agree, setAgree] = useState(false);
   const [spinner, setSpinner] = useState(false);
   const [success, setSuccess] = useState(null);
   const [passwordMismatch, setPasswordMismatch] = useState(false);
-
-  useEffect(() => {
-    const { confirmPassword, ...rest } = formData;
-    setUser(rest);
-  }, [formData]);
+  const [localError, setLocalError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,7 +36,7 @@ const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
     e.preventDefault();
 
     if (!agree) {
-      alert("You must agree to the terms.");
+      setLocalError("You must agree to the terms.");
       return;
     }
 
@@ -50,17 +46,28 @@ const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
     }
 
     setPasswordMismatch(false);
+    setLocalError(null);
     setSpinner(true);
     setSuccess(null);
 
     try {
       const { confirmPassword, ...submissionData } = formData;
-      await jts.post("/users/register/jobseeker", submissionData);
-      setSuccess("Registration successful!");
-      SumbitFinalForm();
+      setUser(submissionData);
+
+      const res = await jts.post("/users/register/jobseeker", submissionData);
+
+      if (res.status === 200) {
+        setSuccess("Registration successful!");
+        navigator("/signin");
+        if (typeof submitFinalForm === "function") {
+          submitFinalForm();
+        }
+      } else {
+        setLocalError("Registration failed. Please try again.");
+      }
     } catch (err) {
-      console.error("Registration Error:", err);
-      alert(err.response?.data?.message || "Registration failed.");
+      console.error("❌ Axios Error:", err);
+      setLocalError(err.response?.data?.message || "Registration failed.");
     } finally {
       setSpinner(false);
     }
@@ -96,8 +103,16 @@ const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
         Maximize productivity with real-time insights, job tracking, and more.
       </Typography>
 
-      {error && <Alert severity="error">{error}</Alert>}
-      {success && <Alert severity="success">{success}</Alert>}
+      {(error || localError) && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {localError || error}
+        </Alert>
+      )}
+      {success && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {success}
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit}>
         <TextField
@@ -145,15 +160,6 @@ const SignupStepTwoFillDetails = ({ setUser, error, SumbitFinalForm }) => {
           margin="dense"
           error={passwordMismatch}
           helperText={passwordMismatch ? "Passwords do not match" : ""}
-        />
-        <TextField
-          label="Phone Number"
-          name="phoneNumber"
-          fullWidth
-          size="small"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          margin="dense"
         />
 
         <FormControlLabel

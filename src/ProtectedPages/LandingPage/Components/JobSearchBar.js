@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import {
   Container,
   Grid,
@@ -6,14 +6,25 @@ import {
   Button,
   Typography,
   Paper,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { AuthContext } from "../../../Context/AuthContext";
 import { ModalContext } from "../../../Context/ModalContext";
 
-const JobSearchBar = ({ setLocationSearch, setTitleSearch, handleSearch }) => {
+const JobSearchBar = ({
+  setLocationSearch,
+  setTitleSearch,
+  setJobTypeSearch,
+  handleSearch,
+  jobTypeSearch,
+}) => {
   const { user } = useContext(AuthContext);
   const { openModal } = useContext(ModalContext);
+
   return (
     <Container
       maxWidth="md"
@@ -25,20 +36,14 @@ const JobSearchBar = ({ setLocationSearch, setTitleSearch, handleSearch }) => {
         alignItems: "center",
       }}
     >
-      {/* Title */}
       <Typography
         variant="h4"
         fontWeight="bold"
-        sx={{
-          color: "#333",
-          fontFamily: "'Poppins', sans-serif",
-          mb: 2,
-        }}
+        sx={{ color: "#333", fontFamily: "'Poppins', sans-serif", mb: 2 }}
       >
         One Search, Millions of Jobs
       </Typography>
 
-      {/* Search Bar Container */}
       <Paper
         elevation={3}
         sx={{
@@ -50,8 +55,8 @@ const JobSearchBar = ({ setLocationSearch, setTitleSearch, handleSearch }) => {
         }}
       >
         <Grid container spacing={2} alignItems="center">
-          {/* Job Search Input */}
-          <Grid item xs={12} sm={5}>
+          {/* Title Input */}
+          <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
               variant="outlined"
@@ -67,8 +72,8 @@ const JobSearchBar = ({ setLocationSearch, setTitleSearch, handleSearch }) => {
             />
           </Grid>
 
-          {/* Location Search Input */}
-          <Grid item xs={12} sm={4}>
+          {/* Location Input */}
+          <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
               variant="outlined"
@@ -84,8 +89,25 @@ const JobSearchBar = ({ setLocationSearch, setTitleSearch, handleSearch }) => {
             />
           </Grid>
 
+          {/* Job Type Select */}
+          <Grid item xs={12} sm={2.5}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Job Type</InputLabel>
+              <Select
+                value={jobTypeSearch}
+                label="Job Type"
+                onChange={(e) => setJobTypeSearch(e.target.value)}
+                sx={{ borderRadius: "10px", background: "#fff" }}
+              >
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="full-time">Full-time</MenuItem>
+                <MenuItem value="part-time">Part-time</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
           {/* Search Button */}
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={2.5}>
             <Button
               fullWidth
               variant="contained"
@@ -102,9 +124,7 @@ const JobSearchBar = ({ setLocationSearch, setTitleSearch, handleSearch }) => {
                   transform: "scale(1.05)",
                 },
               }}
-              onClick={() => {
-                handleSearch();
-              }}
+              onClick={handleSearch}
             >
               Search Jobs
             </Button>
@@ -112,16 +132,13 @@ const JobSearchBar = ({ setLocationSearch, setTitleSearch, handleSearch }) => {
         </Grid>
       </Paper>
 
-      {/* Resume Upload Link */}
+      {/* Resume Upload Suggestion */}
       {user &&
         user.role === "jobseeker" &&
-        user.jobSeekerProfile.resume.length < 1 &&
-        !user.jobSeekerProfile == null && (
+        user.jobSeekerProfile?.resume?.length < 1 && (
           <Typography variant="body2" sx={{ mt: 2, color: "#555" }}>
             <Button
-              onClick={() => {
-                openModal("RESUME_UPLOAD");
-              }}
+              onClick={() => openModal("RESUME_UPLOAD")}
               variant="text"
               sx={{
                 p: 0,

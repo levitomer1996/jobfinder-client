@@ -15,6 +15,7 @@ import { EmployerPageContext } from "../../../Context/EmployerPageContext";
 import ManageJobsPage from "./EmployerPageComponents/ManageJobsPage";
 import useGetUserJobs from "../../../Hook/useGetUserJobs";
 import EmpProfilePage from "./EmployerPageComponents/EmpProfilePage";
+import { CompanyManage } from "./EmployerPageComponents/CompanyManage";
 
 const EmployerProfilePage = () => {
   const { activePage, setActivePage } = useContext(EmployerPageContext);
@@ -39,6 +40,8 @@ const EmployerProfilePage = () => {
             error={get_user_jobs_error}
           />
         );
+      case "CompanyManage":
+        return <CompanyManage />;
       default:
         return <Typography>Page Not Found</Typography>;
     }
@@ -62,7 +65,7 @@ const EmployerProfilePage = () => {
               {[
                 { text: "Profile", key: "EmployerProfile" },
                 { text: "Manage Jobs", key: "ManageJobs" },
-                { text: "Company Info", key: "CompanyInfo" },
+                { text: "Company Info", key: "CompanyManage" },
                 { text: "Settings", key: "Settings" },
               ].map((item) => (
                 <ListItem

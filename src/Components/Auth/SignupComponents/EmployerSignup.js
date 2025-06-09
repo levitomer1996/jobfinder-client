@@ -14,17 +14,20 @@ import {
 } from "@mui/material";
 import jts from "../../../API/jts";
 import useSearchCompanies from "../../../Hook/useSearchCompanies";
+import { useNavigate } from "react-router-dom";
 
-const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
+const EmployerSignup = ({ setEmployer, SubmitEmployerForm = () => {} }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    phoneNumber: "",
     companyName: "",
     agree: false,
   });
+
+  const navigate = useNavigate();
+
   const [spinner, setSpinner] = useState(false);
   const [success, setSuccess] = useState(null);
   const [errorText, setErrorText] = useState(null);
@@ -50,19 +53,17 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const newFormData = {
+    const updated = {
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     };
-    setFormData(newFormData);
+    setFormData(updated);
 
     if (
       name === "confirmPassword" ||
-      (name === "password" && newFormData.confirmPassword.length > 0)
+      (name === "password" && updated.confirmPassword.length > 0)
     ) {
-      setConfirmPasswordError(
-        newFormData.confirmPassword !== newFormData.password
-      );
+      setConfirmPasswordError(updated.confirmPassword !== updated.password);
     }
   };
 
@@ -79,23 +80,20 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
     }
 
     try {
-      let companyWasFound = !showCreateCompany;
       let companyId = null;
 
       if (showCreateCompany) {
-        const companyResponse = await jts.post("/company", newCompanyData);
-
-        companyId = companyResponse.data._id;
+        const { data } = await jts.post("/company", newCompanyData);
+        companyId = data._id;
       } else {
         const existingCompany = companies.find(
           (c) => c === formData.companyName
         );
-
         if (existingCompany) {
-          const fetchCompany = await jts.get(
+          const { data } = await jts.get(
             `/company/search?name=${encodeURIComponent(existingCompany)}`
           );
-          companyId = fetchCompany.data[0]?._id; // backend must support returning full objects
+          companyId = data[0]?._id;
         }
       }
 
@@ -104,17 +102,18 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
         email: formData.email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
-        phoneNumber: formData.phoneNumber,
         agree: formData.agree,
-        company: companyWasFound
-          ? { found: true, companyId }
-          : { found: false, ...newCompanyData },
+        company: showCreateCompany
+          ? { found: false, ...newCompanyData }
+          : { found: true, companyId },
       };
 
       await jts.post("/users/register/employer", payload);
       setSuccess("Registration successful!");
-      SubmitEmployerForm();
+      navigate("/signin");
+      if (typeof SubmitEmployerForm === "function") SubmitEmployerForm();
     } catch (err) {
+      console.error("REGISTRATION ERROR:", err);
       setError(true);
       setErrorText(err.response?.data?.message || "Registration failed.");
     } finally {
@@ -153,7 +152,6 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
           onChange={handleChange}
           required
         />
-
         <TextField
           fullWidth
           margin="dense"
@@ -164,7 +162,6 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
           onChange={handleChange}
           required
         />
-
         <TextField
           fullWidth
           margin="dense"
@@ -184,7 +181,6 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
         >
           Enter 6 or more characters
         </Typography>
-
         <TextField
           fullWidth
           margin="dense"
@@ -197,16 +193,6 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
           error={confirmPasswordError}
           helperText={confirmPasswordError ? "Passwords do not match." : ""}
         />
-
-        <TextField
-          fullWidth
-          margin="dense"
-          placeholder="Phone Number"
-          name="phoneNumber"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-        />
-
         <Autocomplete
           freeSolo
           options={companies}
@@ -234,7 +220,6 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
             <Typography variant="body2" fontWeight="bold">
               Create new company: "{formData.companyName}"
             </Typography>
-
             <TextField
               fullWidth
               margin="dense"
@@ -247,7 +232,6 @@ const EmployerSignup = ({ setEmployer, SubmitEmployerForm }) => {
                 }))
               }
             />
-
             <TextField
               fullWidth
               margin="dense"

@@ -14,6 +14,7 @@ const JobSeekerLandingPage = () => {
 
   const [locationSearch, setLocationSearch] = useState("");
   const [titleSearch, setTitleSearch] = useState("");
+  const [jobTypeSearch, setJobTypeSearch] = useState(""); // ✅ add this
 
   useEffect(() => {
     if (user?.suggestedJobs) {
@@ -44,6 +45,7 @@ const JobSeekerLandingPage = () => {
         params: {
           title: titleSearch,
           location: locationSearch,
+          jobType: jobTypeSearch, // ✅ include jobType in search
         },
       });
       console.log(response.data);
@@ -67,13 +69,12 @@ const JobSeekerLandingPage = () => {
         bgcolor: "#f9f9f9",
       }}
     >
-      {/* Motto */}
       <Typography
         variant="h4"
         fontWeight="800"
         textAlign="center"
         sx={{
-          color: "#1e293b", // darker gray-blue for a modern look
+          color: "#1e293b",
           fontFamily: "Roboto, sans-serif",
           mb: 4,
           letterSpacing: "0.5px",
@@ -84,7 +85,6 @@ const JobSeekerLandingPage = () => {
         Track every job. Never miss a step.
       </Typography>
 
-      {/* Create account input + button */}
       {!isLogged && (
         <Box
           sx={{
@@ -132,6 +132,7 @@ const JobSeekerLandingPage = () => {
         <JobSearchBar
           setLocationSearch={setLocationSearch}
           setTitleSearch={setTitleSearch}
+          setJobTypeSearch={setJobTypeSearch} // ✅ pass setter
           handleSearch={handleSearch}
         />
       </Box>

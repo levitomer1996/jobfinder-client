@@ -16,6 +16,7 @@ import {
   IconButton,
   Stack,
   Divider,
+  MenuItem,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import jts from "../../../../API/jts";
@@ -27,9 +28,8 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
   const [newJob, setNewJob] = useState({
     title: "",
     description: "",
-    salaryRangeMin: "",
-    salaryRangeMax: "",
     location: "",
+    jobType: "full-time", // ✅ default
     requiredSkills: [""],
   });
 
@@ -40,9 +40,8 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
     setNewJob({
       title: "",
       description: "",
-      salaryRangeMin: "",
-      salaryRangeMax: "",
       location: "",
+      jobType: "full-time",
       requiredSkills: [""],
     });
     setOpen(false);
@@ -142,30 +141,18 @@ const ManageJobsPage = ({ jobs, loading, error }) => {
                 setNewJob({ ...newJob, location: e.target.value })
               }
             />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <TextField
-                  label="Salary Min"
-                  fullWidth
-                  type="number"
-                  value={newJob.salaryRangeMin}
-                  onChange={(e) =>
-                    setNewJob({ ...newJob, salaryRangeMin: e.target.value })
-                  }
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  label="Salary Max"
-                  fullWidth
-                  type="number"
-                  value={newJob.salaryRangeMax}
-                  onChange={(e) =>
-                    setNewJob({ ...newJob, salaryRangeMax: e.target.value })
-                  }
-                />
-              </Grid>
-            </Grid>
+            <TextField
+              select
+              label="Job Type"
+              fullWidth
+              value={newJob.jobType}
+              onChange={(e) =>
+                setNewJob({ ...newJob, jobType: e.target.value })
+              }
+            >
+              <MenuItem value="full-time">Full-time</MenuItem>
+              <MenuItem value="part-time">Part-time</MenuItem>
+            </TextField>
 
             <Divider sx={{ my: 2 }} />
 
