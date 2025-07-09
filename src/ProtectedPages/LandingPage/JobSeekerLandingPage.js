@@ -19,6 +19,7 @@ const JobSeekerLandingPage = () => {
   useEffect(() => {
     if (user?.suggestedJobs) {
       setSuggestedJobs(user.suggestedJobs);
+      console.log(user.suggestedJobs);
     }
   }, [user]);
 

@@ -13,6 +13,7 @@ import OAuth2Callback from "../Components/Auth/Google/OAuth2Callback";
 import ChooseGoogleRole from "../Components/Auth/Google/ChooseGoogleRole";
 import JobPage from "../Pages/JobPage/JobPage";
 import Header from "../Components/Layout/Header/Header";
+import CompanyPage from "../Pages/CompanyPage/CompanyPage";
 
 const AppRouter = () => {
   return (
@@ -34,6 +35,7 @@ const AppRouter = () => {
         <Route path="/oauth2callback" element={<OAuth2Callback />} />
         <Route path="/choose-role" element={<ChooseGoogleRole />} />
         <Route path="/job/:id" element={<JobPage />} /> {/* ✅ Add job route */}
+        <Route path="/company/:id" element={<CompanyPage />} />
       </Routes>
     </Router>
   );
