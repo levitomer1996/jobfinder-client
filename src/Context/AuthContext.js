@@ -12,11 +12,16 @@ const initialState = {
 const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      return { ...state, user: action.payload, loading: false, isLogged: true };
+      return {
+        ...state,
+        user: action.payload,
+        loading_auth: false,
+        isLogged: true,
+      };
     case "LOGOUT":
-      return { ...state, user: null, loading: false, isLogged: false };
+      return { ...state, user: null, loading_auth: false, isLogged: false };
     case "SET_LOADING":
-      return { ...state, loading: action.payload };
+      return { ...state, loading_auth: action.payload };
     default:
       return state;
   }
@@ -27,6 +32,7 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkUserSession = async () => {
+      dispatch({ type: "SET_LOADING", payload: true });
       const token = localStorage.getItem("token");
       if (token) {
         try {
@@ -36,6 +42,7 @@ const AuthProvider = ({ children }) => {
           dispatch({ type: "LOGIN", payload: response.data });
         } catch (error) {
           console.error("Invalid token, logging out", error);
+          dispatch({ type: "SET_LOADING", payload: false });
           logout();
         }
       } else {

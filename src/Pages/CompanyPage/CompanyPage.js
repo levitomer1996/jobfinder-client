@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import useGetCompanyById from "../../Hook/useGetCompanyById";
+import RecruiterCard from "./Components/RecruiterCard";
 
 const CompanyPage = () => {
   const { id } = useParams();
@@ -43,12 +44,14 @@ const CompanyPage = () => {
 
           {Array.isArray(company.recruiterUsers) &&
           company.recruiterUsers.length > 0 ? (
-            <Grid container spacing={2}>
+            <Grid container flexDirection={"row"} spacing={2}>
               {company.recruiterUsers.map((recruiter) => (
-                <Grid item key={recruiter._id} xs={12}>
-                  <Typography variant="body2">
-                    {recruiter.name} ({recruiter.email})
-                  </Typography>
+                <Grid item>
+                  <RecruiterCard
+                    id={recruiter.id}
+                    email={recruiter.email}
+                    name={recruiter.name}
+                  />
                 </Grid>
               ))}
             </Grid>

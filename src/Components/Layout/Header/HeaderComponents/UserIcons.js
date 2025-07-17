@@ -270,8 +270,7 @@ const UserIcons = ({
         <MenuItem onClick={handleProfileMenuClose}>
           <a href="/profile">Profile</a>
         </MenuItem>
-        <MenuItem onClick={handleProfileMenuClose}>My Jobs</MenuItem>
-        <MenuItem onClick={handleProfileMenuClose}>My Reviews</MenuItem>
+
         <MenuItem
           onClick={() => {
             logout();

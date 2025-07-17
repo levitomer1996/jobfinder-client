@@ -17,7 +17,7 @@ const useGetEmployerProfile = () => {
       const response = await axios.get("/employers/getbyuser", {
         headers: { Authorization: `Bearer ${token}` }, // ✅ Send auth token
       });
-
+      console.log(response.data);
       setemployerProfile(response.data); // ✅ Store JobSeeker data
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch job seeker");

@@ -13,9 +13,10 @@ import UserIcons from "./HeaderComponents/UserIcons";
 import logo from "../../../Asstets/LOGO/HeaderLogo.png";
 import useGetChats from "../../../Hook/useGetChats";
 import { useNavigate } from "react-router-dom";
+import SmallCircularProgress from "../../SmallCircularProgress";
 
 const Header = () => {
-  const { user, isLogged } = useContext(AuthContext);
+  const { user, isLogged, loading_auth } = useContext(AuthContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [chats, chats_loading, chats_error] = useGetChats();
@@ -23,6 +24,45 @@ const Header = () => {
   useEffect(() => {
     console.log(user);
   }, [user]);
+
+  function renderIconsWhenLoading() {
+    {
+      if (loading_auth === false) {
+        return isLogged ? (
+          <UserIcons
+            profileImageUrl={`${process.env.REACT_APP_SERVER_URL}${user.profileImageUrl}`}
+            unreadedChats={user.unreadedChats}
+            chats={chats}
+            notifications={user.notifications}
+            navigate={navigate}
+          />
+        ) : (
+          <Button
+            href="/signin"
+            sx={{
+              fontFamily: "'Roboto', sans-serif",
+              fontWeight: "bold",
+              color: "#333",
+              backgroundColor: "rgba(0, 0, 0, 0.05)",
+              borderRadius: "8px",
+              px: 2,
+              py: 0.7,
+              textTransform: "none",
+              fontSize: "0.875rem",
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.1)",
+                transform: "scale(1.05)",
+              },
+            }}
+          >
+            Sign In
+          </Button>
+        );
+      } else {
+        return <SmallCircularProgress />;
+      }
+    }
+  }
 
   return (
     <AppBar
@@ -88,36 +128,7 @@ const Header = () => {
             gap: 2,
           }}
         >
-          {isLogged ? (
-            <UserIcons
-              profileImageUrl={`${process.env.REACT_APP_SERVER_URL}${user.profileImageUrl}`}
-              unreadedChats={user.unreadedChats}
-              chats={chats}
-              notifications={user.notifications}
-              navigate={navigate}
-            />
-          ) : (
-            <Button
-              href="/signin"
-              sx={{
-                fontFamily: "'Roboto', sans-serif",
-                fontWeight: "bold",
-                color: "#333",
-                backgroundColor: "rgba(0, 0, 0, 0.05)",
-                borderRadius: "8px",
-                px: 2,
-                py: 0.7,
-                textTransform: "none",
-                fontSize: "0.875rem",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.1)",
-                  transform: "scale(1.05)",
-                },
-              }}
-            >
-              Sign In
-            </Button>
-          )}
+          {renderIconsWhenLoading()}
         </Box>
       </Toolbar>
     </AppBar>

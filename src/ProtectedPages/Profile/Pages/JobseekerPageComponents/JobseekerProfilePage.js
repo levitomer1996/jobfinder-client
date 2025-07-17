@@ -69,7 +69,7 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
       setResumeFiles(user.resumes || []);
       fetchSkills(jobSeeker._id);
     }
-  }, [jobSeeker, user.resumes, fetchSkills]); // Added fetchSkills to dependencies
+  }, [jobSeeker, user.resumes]); // Added fetchSkills to dependencies
 
   const handleSkillChange = (index, value) => {
     const updated = [...skillsInput];
