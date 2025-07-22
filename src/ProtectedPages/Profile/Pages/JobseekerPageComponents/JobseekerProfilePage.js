@@ -234,7 +234,8 @@ const JSProfilePage = ({ jobSeeker, error, loading }) => {
     // Increased overall spacing and responsive padding
     <Grid
       container
-      spacing={{ xs: 2, sm: 3, md: 4 }}
+      spacing={0} // keep column spacing controlled by child `item`s
+      rowSpacing={{ xs: 3, sm: 4, md: 5 }} // more vertical space between rows
       sx={{ flexGrow: 1, p: { xs: 2, sm: 3, md: 4 } }}
     >
       {loading && (

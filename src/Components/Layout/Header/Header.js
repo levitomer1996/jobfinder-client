@@ -117,6 +117,7 @@ const Header = () => {
               objectFit: "contain",
               display: { xs: "block", sm: "none" },
             }}
+            onClick={() => (window.location.href = "/")}
           />
         )}
 
