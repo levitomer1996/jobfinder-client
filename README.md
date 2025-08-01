@@ -1,70 +1,121 @@
-# Getting Started with Create React App
+# 🛠️ NestJS Backend - Installation Guide
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a backend project built with [NestJS](https://nestjs.com/) and connected to MongoDB. It includes Google OAuth2 authentication and JWT-based login.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📦 Requirements
 
-### `npm start`
+- Node.js (v18+ recommended)
+- npm (v9+)
+- MongoDB (cloud or local)
+- Google Cloud Console credentials (for OAuth2)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Installation Steps
 
-### `npm test`
+1. **Clone the Repository**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```bash
+   git clone https://github.com/your-username/your-repo-name.git
+   cd your-repo-name
+   ```
 
-### `npm run build`
+2. **Install Dependencies**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```bash
+   npm install
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. **Configure Environment Variables**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   Create a `.env` file in the root directory and copy the following content:
 
-### `npm run eject`
+   ```env
+   # MongoDB Connection
+   MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+   # Server settings
+   PORT=4000
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   # JWT configurations
+   JWT_SECRET=tomer
+   JWT_EXPIRES_IN=24h
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   # Google OAuth2
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   # Use your local machine's IP for server (if not using localhost)
+   GOOGLE_CALLBACK_URL=http://<your-server-ip>:4000/users/google/redirect
 
-## Learn More
+   # Redirect after login – this is usually your frontend (React) address
+   GOOGLE_RES_REDIRECT=http://<your-frontend-address>:3000
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   **Notes:**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   - Replace `<username>`, `<password>`, and `xxxxx` in `MONGO_URI`.
+   - Use your **own IP address** or `localhost` depending on your setup.
+   - Replace Google OAuth credentials with your own from [Google Developer Console](https://console.cloud.google.com/).
 
-### Code Splitting
+4. **Run the Project**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+   ```bash
+   npm run start:dev
+   ```
 
-### Analyzing the Bundle Size
+   The server will be available at: `http://localhost:4000`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🔑 Google OAuth2 Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+To make OAuth2 work:
 
-### Advanced Configuration
+1. Go to [Google Cloud Console](https://console.cloud.google.com/).
+2. Create an OAuth2 Client ID.
+3. Set the **Authorized redirect URI** to match your `GOOGLE_CALLBACK_URL` (e.g., `http://localhost:4000/users/google/redirect`).
+4. Copy the client ID and secret to `.env`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 🧪 Useful Commands
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+| Command             | Description              |
+| ------------------- | ------------------------ |
+| `npm run start`     | Run in production mode   |
+| `npm run start:dev` | Run in development mode  |
+| `npm run build`     | Compile the project      |
+| `npm run lint`      | Check for linting errors |
+| `npm run test`      | Run unit tests           |
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🗒️ Troubleshooting
+
+- Make sure ports `4000` (backend) and `3000` (frontend) are available.
+- Ensure your Google credentials match the redirect URI.
+- If working across machines, update the `.env` file with correct IPs or hostnames.
+
+---
+
+## ⚛️ React Client Environment Setup
+
+Create a `.env` file in your React project root with the following content:
+
+```env
+# REACT_APP_SERVER_URL=https://jobfinder-server-d7g6.onrender.com
+# REACT_APP_SOCKET_URL=https://jobfinder-server-d7g6.onrender.com
+REACT_APP_SERVER_URL=http://192.168.90.30:4000
+REACT_APP_SOCKET_URL=http://192.168.90.30:4000
+REACT_APP_USER_NAMESPACE=/user
+REACT_APP_NOTIFICATION_NAMESPACE=/notification
+
+REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyDRY93KKvKIsO4e4p3K_OiOMrK8w-R45eI
+```
+
+**Note:** Do not change these values unless you understand the environment configuration and IP setup. Adjust the server IP only if your backend is hosted on a different machine.
+
+---
